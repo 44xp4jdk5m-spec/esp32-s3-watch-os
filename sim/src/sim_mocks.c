@@ -15,14 +15,17 @@
 
 #include "lvgl.h"
 
+#include "app_ble_ancs.h"
 #include "app_config.h"
 #include "app_events.h"
 #include "app_image_loader.h"
 #include "app_notification_center.h"
 #include "app_power.h"
 #include "app_ui.h"
+#include "app_wifi.h"
 #include "hw_audio.h"
 #include "hw_display.h"
+#include "hw_vibrator.h"
 #include "hw_imu.h"
 #include "hw_rtc.h"
 #include "js_app_registry.h"
@@ -106,6 +109,50 @@ int64_t      g_last_activity_us = 0;
 bool         g_display_off      = false;
 bool         g_display_dimmed   = false;
 bool         g_aod_active       = false;
+
+/* ── Battery / charge / thermal state (app_events.c on device) ────── */
+int     g_battery_pct            = 87;
+bool    g_is_charging            = false;
+bool    g_is_vbus_present        = false;
+bool    g_was_charging           = false;
+bool    g_was_vbus_present       = false;
+bool    g_charging_anim_active   = false;
+int64_t g_last_charge_change_us  = 0;
+bool    g_force_batt_check       = false;
+float   g_cpu_temperature        = 38.0f;
+float   g_pmic_temperature       = 34.0f;
+bool    g_thermal_shutdown_active = false;
+bool    g_thermal_show_warning    = false;
+bool    g_thermal_hide_warning    = false;
+
+/* ── Pending actions / toggles ────────────────────────────────────── */
+bool g_pending_wake              = false;
+bool g_pending_reset             = false;
+bool g_pending_honeycomb         = false;
+bool g_pending_control_center    = false;
+bool g_pending_cc_scroll_top     = false;
+bool g_pending_cc_flashlight     = false;
+bool g_pending_flashlight_exit   = false;
+bool g_pending_cc_open_settings  = false;
+int  g_pending_cc_settings_target = -1;
+bool g_settings_return_to_cc     = false;
+bool g_pending_shutdown          = false;
+bool g_pending_shutdown_dismiss  = false;
+bool g_pending_nc_dismiss        = false;
+bool g_pending_screenshot        = false;
+volatile bool g_pending_vibe_click = false;
+bool g_pending_brightness_change = false;
+uint8_t g_new_brightness         = 70;
+bool g_toggle_wifi               = false;
+bool g_toggle_ble                = false;
+bool g_toggle_ancs               = false;
+
+/* ── BLE / ANCS (not simulated) ───────────────────────────────────── */
+bool g_ancs_connected            = false;
+bool g_ancs_ready                = false;
+char g_ancs_passkey[8]           = {0};
+bool g_new_notification_pending  = false;
+ancs_notification_t g_latest_notification;
 
 /* ── UI helpers the picker calls ──────────────────────────────────── */
 bool app_notification_center_is_open(void) { return false; }
@@ -278,6 +325,37 @@ int esp_codec_dev_read(esp_codec_dev_handle_t codec_dev, void *data,
 bool app_power_get_aod_active(void)
 {
     return false;
+}
+
+/* ── Control-center actions (no real radio / PMIC on the host) ────── */
+bool app_wifi_is_connected(void)
+{
+    return false;
+}
+
+void app_wifi_set_enabled(bool enable)
+{
+    g_config.wifi_enabled = enable;
+}
+
+void app_power_reboot(void)
+{
+    printf("[sim] reboot requested (ignored)\n");
+}
+
+void app_power_set_aod_enabled(bool enable)
+{
+    g_config.always_on_display = enable;
+}
+
+void app_power_set_low_power(bool enable)
+{
+    (void)enable;
+}
+
+void hw_vibrator_set_muted(bool muted)
+{
+    (void)muted;
 }
 
 /* ── Pre-decoded image loader ─────────────────────────────────────── */

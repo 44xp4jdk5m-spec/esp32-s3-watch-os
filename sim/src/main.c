@@ -28,6 +28,8 @@
 #include "app_config.h"
 #include "app_events.h"
 #include "calculator_ui.h"
+#include "control_center.h"
+#include "flashlight_ui.h"
 #include "honeycomb_menu.h"
 #include "noise_ui.h"
 #include "sim_display.h"
@@ -48,6 +50,8 @@ static bool     s_open_picker    = false;
 static bool     s_open_calculator = false;
 static bool     s_open_activity   = false;
 static bool     s_open_noise      = false;
+static bool     s_open_cc         = false;
+static bool     s_open_flashlight = false;
 
 /* Hardware-button state: key 1 = GPIO0 (BOOT), key 2 = GPIO10 (PWR). */
 static bool     s_btn_down[2];
@@ -123,6 +127,24 @@ static void open_noise(void)
     g_current_screen = APP_SCREEN_NOISE;
     printf("[sim] noise opened\n");
 }
+ 
+
+/* Control center is an overlay on top of whatever is showing; GPIO10 (the
+ * PWR button) opens it, exactly as app_events.c does. */
+static void open_control_center(void)
+{
+    if (control_center_is_active()) return;
+    control_center_open();
+    g_current_screen = APP_SCREEN_CONTROL_CENTER;
+    printf("[sim] control center opened\n");
+}
+
+static void open_flashlight(void)
+{
+    flashlight_ui_open();
+    g_current_screen = APP_SCREEN_FLASHLIGHT;
+    printf("[sim] flashlight opened\n");
+}
 
 static void finish_boot(void)
 {
@@ -143,6 +165,11 @@ static void finish_boot(void)
         open_activity();
     } else if (s_open_noise) {
         open_noise();
+    } else if (s_open_cc) {
+        open_control_center();
+    } else if (s_open_flashlight) {
+        open_control_center();
+        open_flashlight();
     }
 }
 
@@ -206,6 +233,18 @@ static void sim_button_event(sim_btn_t btn, sim_btn_event_t evt)
             printf("[sim] noise closed\n");
             return;
         }
+        if (flashlight_ui_is_active()) {
+            flashlight_ui_handle_back();
+            g_current_screen = APP_SCREEN_CONTROL_CENTER;
+            printf("[sim] flashlight closed\n");
+            return;
+        }
+        if (control_center_is_active()) {
+            control_center_handle_back();
+            g_current_screen = APP_SCREEN_WATCH_FACE;
+            printf("[sim] control center closed\n");
+            return;
+        }
         if (watch_face_picker_is_open()) {
             watch_face_picker_cancel();
         } else if (honeycomb_menu_is_active()) {
@@ -214,8 +253,16 @@ static void sim_button_event(sim_btn_t btn, sim_btn_event_t evt)
             open_launcher();
         }
     } else {
-        printf("[sim] GPIO10 %s — control center / shutdown not simulated\n",
-               evt == SIM_BTN_LONG_PRESS ? "long-press" : "click");
+        if (evt == SIM_BTN_LONG_PRESS) {
+            printf("[sim] GPIO10 long-press — shutdown screen not simulated\n");
+            return;
+        }
+        if (control_center_is_active()) {
+            control_center_scroll_top();
+            printf("[sim] control center → scroll to top\n");
+        } else {
+            open_control_center();
+        }
     }
 }
 
@@ -274,6 +321,10 @@ int main(int argc, char **argv)
             s_open_activity = true;
         } else if (strcmp(argv[i], "--noise") == 0) {
             s_open_noise = true;
+        } else if (strcmp(argv[i], "--cc") == 0) {
+            s_open_cc = true;
+        } else if (strcmp(argv[i], "--flashlight") == 0) {
+            s_open_flashlight = true;
         } else if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
             printf("usage: %s [options]\n", argv[0]);
             printf("  --scale N        window scale 1..4 (default 1)\n");
@@ -284,6 +335,8 @@ int main(int argc, char **argv)
             printf("  --calculator     open the calculator after boot\n");
             printf("  --activity       open the activity app after boot\n");
             printf("  --noise          open the noise app after boot\n");
+            printf("  --cc             open the control center after boot\n");
+            printf("  --flashlight     open the control center + flashlight after boot\n");
             printf("  --shot FILE      save a BMP frame to FILE and exit\n");
             printf("  --shot-after MS  delay before --shot (default boot + 1200 ms)\n");
             return 0;
@@ -302,6 +355,8 @@ int main(int argc, char **argv)
 
     watch_face_registry_init();
     watch_face_picker_init();
+    control_center_init();
+    flashlight_ui_init();
     printf("[sim] %u watch faces registered\n", watch_face_count());
     printf("[sim] keys: 1 = GPIO0 (BOOT), 2 = GPIO10 (PWR), Esc quit\n");
     printf("[sim] hold the left mouse button on the face for the picker\n");
@@ -343,6 +398,14 @@ int main(int argc, char **argv)
         if (g_pending_noise) {
             g_pending_noise = false;
             open_noise();
+        }
+        if (g_pending_cc_flashlight) {
+            g_pending_cc_flashlight = false;
+            open_flashlight();
+        }
+        if (g_pending_cc_scroll_top) {
+            g_pending_cc_scroll_top = false;
+            control_center_scroll_top();
         }   open_activity();
         }
 
