@@ -8,13 +8,13 @@
  * Sensor data (battery, temperature, IMU) is synthetic — see
  * sim_platform.c.  There is no ESP32, no WiFi, no BLE and no ESP-DL.
  *
- * Keys:
- *   1..6      switch watch face
- *   H         open / close the honeycomb launcher
- *   B         replay the boot splash
- *   R         simulate a raise-to-wake wrist motion
+ * Input mirrors the real watch — there are no face hotkeys:
+ *   1 (hold)  GPIO0 / BOOT button   — click = back ↔ launcher, long = no-op
+ *   2 (hold)  GPIO10 / PWR button   — click/long = control center/shutdown
+ *                                     (those screens are not simulated)
  *   Esc       quit
- *   Right-drag mouse → simulated wrist tilt (IMU)
+ *   Left-drag on the face → touch; hold 450 ms → watch-face picker
+ *   Right-drag mouse      → simulated wrist tilt (IMU)
  */
 #include <SDL2/SDL.h>
 #include <stdio.h>
@@ -25,12 +25,14 @@
 #include "lvgl.h"
 
 #include "app_config.h"
+#include "app_events.h"
 #include "honeycomb_menu.h"
 #include "sim_display.h"
 #include "sim_input.h"
 #include "sim_platform.h"
 #include "ui_boot_up.h"
 #include "watch_face.h"
+#include "watch_face_picker.h"
 
 #define BOOT_DURATION_MS 2200
 #define FRAME_MS         5
@@ -39,7 +41,12 @@ static bool     s_booting        = true;
 static uint32_t s_boot_start_ms  = 0;
 static uint8_t  s_face_id        = WATCH_FACE_MINIMAL;
 static bool     s_open_launcher  = false;
-static bool     s_prev_keys[SDL_NUM_SCANCODES];
+static bool     s_open_picker    = false;
+
+/* Hardware-button state: key 1 = GPIO0 (BOOT), key 2 = GPIO10 (PWR). */
+static bool     s_btn_down[2];
+static bool     s_btn_long[2];
+static uint32_t s_btn_t0[2];
 
 /* Headless / scripted capture. */
 static const char *s_shot_path  = NULL;
@@ -63,6 +70,7 @@ static void start_boot(void)
     ui_boot_up_screen_init();
     lv_screen_load(ui_boot_up);
     ui_boot_up_start_animation();
+    g_current_screen = APP_SCREEN_BOOT_UP;
     s_boot_start_ms = now_ms();
     s_booting = true;
 }
@@ -74,7 +82,16 @@ static void open_launcher(void)
     honeycomb_menu_set_distinct_icons(g_config.honeycomb_distinct_icons);
     honeycomb_menu_set_pre_scaled_icons(true);
     honeycomb_menu_create();
+    g_current_screen = APP_SCREEN_HONEYCOMB;
     printf("[sim] launcher opened\n");
+}
+
+static void close_launcher(void)
+{
+    if (!honeycomb_menu_is_active()) return;
+    honeycomb_menu_destroy();
+    g_current_screen = APP_SCREEN_WATCH_FACE;
+    printf("[sim] launcher closed\n");
 }
 
 static void finish_boot(void)
@@ -82,10 +99,15 @@ static void finish_boot(void)
     ui_boot_up_complete();
     ui_boot_up_screen_destroy();
     watch_face_activate(s_face_id);
+    g_current_screen = APP_SCREEN_WATCH_FACE;
     s_booting = false;
     printf("[sim] boot complete — face id %u\n", s_face_id);
 
-    if (s_open_launcher) open_launcher();
+    if (s_open_launcher) {
+        open_launcher();
+    } else if (s_open_picker) {
+        watch_face_picker_open();
+    }
 }
 
 /* ── Clock / battery refresh ─────────────────────────────────────── */
@@ -111,59 +133,69 @@ static void refresh_face(void)
                                       sim_battery_charging(), false);
 }
 
-/* ── Hotkeys ──────────────────────────────────────────────────────── */
-static bool pressed_once(SDL_Scancode sc, const uint8_t *keys)
-{
-    const bool down = keys[sc] != 0;
-    const bool edge = down && !s_prev_keys[sc];
-    s_prev_keys[sc] = down;
-    return edge;
-}
+/* ── Hardware buttons ─────────────────────────────────────────────── */
+/* The board has two buttons: BOOT on GPIO0 (active low) and PWR on GPIO10
+ * (AXP2101 PEK).  Key 1 / key 2 are held down to emulate pressing them.
+ * Timing matches components/hw/input/hw_button.c: BOOT reports a long
+ * press after 1 s, PWR after 2 s.  Actions mirror app_events.c as far as
+ * the simulator can — the control-centre and shutdown screens are not
+ * part of it, so those events are only logged. */
+typedef enum { SIM_BTN_BOOT = 0, SIM_BTN_PWR = 1 } sim_btn_t;
+typedef enum { SIM_BTN_CLICK, SIM_BTN_LONG_PRESS } sim_btn_event_t;
 
-static void handle_hotkeys(const uint8_t *keys)
+static void sim_button_event(sim_btn_t btn, sim_btn_event_t evt)
 {
-    static const SDL_Scancode numkeys[] = {
-        SDL_SCANCODE_1, SDL_SCANCODE_2, SDL_SCANCODE_3,
-        SDL_SCANCODE_4, SDL_SCANCODE_5, SDL_SCANCODE_6,
-    };
-
-    if (pressed_once(SDL_SCANCODE_H, keys) && !s_booting) {
-        if (honeycomb_menu_is_active()) {
-            honeycomb_menu_destroy();
-            printf("[sim] launcher closed\n");
+    if (btn == SIM_BTN_BOOT) {
+        if (evt == SIM_BTN_LONG_PRESS) {
+            /* app_events.c only acts on GPIO0 clicks. */
+            printf("[sim] GPIO0 long-press\n");
+            return;
+        }
+        if (watch_face_picker_is_open()) {
+            watch_face_picker_cancel();
+        } else if (honeycomb_menu_is_active()) {
+            close_launcher();
         } else {
             open_launcher();
         }
+    } else {
+        printf("[sim] GPIO10 %s — control center / shutdown not simulated\n",
+               evt == SIM_BTN_LONG_PRESS ? "long-press" : "click");
     }
+}
 
-    for (int i = 0; i < 6; i++) {
-        if (!pressed_once(numkeys[i], keys)) continue;
+static void handle_buttons(const uint8_t *keys)
+{
+    static const SDL_Scancode sc[2]      = { SDL_SCANCODE_1, SDL_SCANCODE_2 };
+    static const uint32_t     long_ms[2] = { 1000, 2000 };
+    static const int          gpio[2]    = { 0, 10 };
 
-        const uint8_t id = (uint8_t)i;
-        if (id >= watch_face_count()) continue;
+    const uint32_t now = now_ms();
 
-        s_face_id = id;
-        if (!s_booting) {
-            if (honeycomb_menu_is_active()) honeycomb_menu_destroy();
-            watch_face_activate(s_face_id);
-            refresh_face();
-            printf("[sim] face → %s\n", watch_face_get(id)->name);
+    for (int b = 0; b < 2; b++) {
+        const bool down = keys[sc[b]] != 0;
+
+        if (down && !s_btn_down[b]) {
+            s_btn_down[b] = true;
+            s_btn_long[b] = false;
+            s_btn_t0[b]   = now;
+            printf("[sim] GPIO%d pressed\n", gpio[b]);
+        } else if (down && s_btn_down[b] && !s_btn_long[b] &&
+                   (now - s_btn_t0[b]) >= long_ms[b]) {
+            s_btn_long[b] = true;
+            sim_button_event((sim_btn_t)b, SIM_BTN_LONG_PRESS);
+        } else if (!down && s_btn_down[b]) {
+            s_btn_down[b] = false;
+            printf("[sim] GPIO%d released\n", gpio[b]);
+            if (!s_btn_long[b]) sim_button_event((sim_btn_t)b, SIM_BTN_CLICK);
         }
-    }
-
-    if (pressed_once(SDL_SCANCODE_B, keys) && !s_booting) {
-        start_boot();
-    }
-    if (pressed_once(SDL_SCANCODE_R, keys)) {
-        sim_raise_wrist();
-        printf("[sim] simulated raise-to-wake\n");
     }
 }
 
 /* ── Entry point ──────────────────────────────────────────────────── */
 int main(int argc, char **argv)
 {
-    int scale = 2;
+    int scale = 1;      /* 410x502 — fits small screens; use --scale 2+ if you like */
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--scale") == 0 && i + 1 < argc) {
@@ -179,12 +211,15 @@ int main(int argc, char **argv)
             s_face_id = (uint8_t)atoi(argv[++i]);
         } else if (strcmp(argv[i], "--launcher") == 0) {
             s_open_launcher = true;
+        } else if (strcmp(argv[i], "--picker") == 0) {
+            s_open_picker = true;
         } else if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
             printf("usage: %s [options]\n", argv[0]);
-            printf("  --scale N        window scale 1..4 (default 2)\n");
+            printf("  --scale N        window scale 1..4 (default 1)\n");
             printf("  --demo-time      freeze the clock at 10:08 for repeatable shots\n");
             printf("  --face N         watch face id to show after boot\n");
             printf("  --launcher       open the honeycomb launcher after boot\n");
+            printf("  --picker         open the watch-face picker after boot\n");
             printf("  --shot FILE      save a BMP frame to FILE and exit\n");
             printf("  --shot-after MS  delay before --shot (default boot + 1200 ms)\n");
             return 0;
@@ -202,8 +237,10 @@ int main(int argc, char **argv)
     sim_input_init_keypad();
 
     watch_face_registry_init();
+    watch_face_picker_init();
     printf("[sim] %u watch faces registered\n", watch_face_count());
-    printf("[sim] keys: 1-6 face, H launcher, B boot splash, R raise wrist, Esc quit\n");
+    printf("[sim] keys: 1 = GPIO0 (BOOT), 2 = GPIO10 (PWR), Esc quit\n");
+    printf("[sim] hold the left mouse button on the face for the picker\n");
 
     start_boot();
 
@@ -228,9 +265,17 @@ int main(int argc, char **argv)
             refresh_face();
         }
 
-        handle_hotkeys(SDL_GetKeyboardState(NULL));
+        if (!s_booting) handle_buttons(SDL_GetKeyboardState(NULL));
+
+        /* Long-press on the face opens the picker (the same 450 ms gesture
+         * as the device); thumbnails then fill in one per iteration. */
+        watch_face_picker_process();
 
         lv_timer_handler();
+
+        if (watch_face_picker_is_open()) {
+            watch_face_picker_load_next_thumb();
+        }
 
         if (s_shot_path && !s_shot_done &&
             (now_ms() - s_boot_start_ms) >= s_shot_after) {

@@ -17,12 +17,15 @@
 #include "app_config.h"
 #include "app_events.h"
 #include "app_image_loader.h"
+#include "app_notification_center.h"
 #include "app_power.h"
+#include "app_ui.h"
 #include "hw_display.h"
 #include "hw_rtc.h"
 #include "js_app_registry.h"
 #include "sim_platform.h"
 #include "watch_face.h"
+#include "watch_face_editor.h"
 
 #ifndef SIM_SPIFFS_ROOT
 #define SIM_SPIFFS_ROOT "spiffs"
@@ -87,6 +90,45 @@ bool g_pending_activity   = false;
 bool g_pending_jsapps     = false;
 bool g_pending_rearrange  = false;
 int  g_pending_jsapp      = -1;
+
+/* ── Screen / activity state (used by the face picker) ─────────────── */
+/* The real values live in app_events.c / app_ui.c, which pull in Wi-Fi,
+ * notifications and the whole main loop.  The simulator only needs the
+ * "which screen is showing" flag and the idle/backlight flags. */
+app_screen_t g_current_screen   = APP_SCREEN_WATCH_FACE;
+int64_t      g_last_activity_us = 0;
+bool         g_display_off      = false;
+bool         g_display_dimmed   = false;
+bool         g_aod_active       = false;
+
+/* ── UI helpers the picker calls ──────────────────────────────────── */
+bool app_notification_center_is_open(void) { return false; }
+
+void app_ui_update_time(void)
+{
+    /* main.c refreshes the active face once per second. */
+}
+
+void app_ui_update_battery(void)
+{
+    /* main.c refreshes the active face once per second. */
+}
+
+bool watch_face_editor_supported(uint8_t face_id)
+{
+    (void)face_id;
+    return false;      /* the face editor is not part of the simulator yet */
+}
+
+void watch_face_editor_open(uint8_t face_id)
+{
+    (void)face_id;
+}
+
+esp_err_t app_config_save(void)
+{
+    return ESP_OK;     /* nothing is persisted on the host */
+}
 
 void app_events_request_vibe_click(void)
 {
@@ -218,9 +260,19 @@ const char *js_app_registry_entry_path(int index)
 /* The real face needs the AI-generated depth layers, which are produced
  * offline into spiffs/ and are not part of the source tree.  Register a
  * placeholder so the face list and picker stay consistent. */
+static lv_obj_t *s_parallax_placeholder = NULL;
+
 static lv_obj_t *parallax_placeholder_create(void)
 {
+    /* The picker creates a face just to snapshot it, then destroys it —
+     * so keep our own handle instead of guessing at destroy time. */
+    if (s_parallax_placeholder) {
+        lv_obj_delete(s_parallax_placeholder);
+        s_parallax_placeholder = NULL;
+    }
+
     lv_obj_t *scr = lv_obj_create(NULL);
+    s_parallax_placeholder = scr;
     lv_obj_remove_flag(scr, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_style_bg_color(scr, lv_color_hex(0x101820), LV_PART_MAIN);
     lv_obj_set_style_bg_opa(scr, LV_OPA_COVER, LV_PART_MAIN);
@@ -240,8 +292,11 @@ static lv_obj_t *parallax_placeholder_create(void)
 
 static void parallax_placeholder_destroy(void)
 {
-    lv_obj_t *scr = lv_screen_active();
-    if (scr) lv_obj_delete(scr);
+    /* Never touch lv_screen_active() here: when the picker snapshots a
+     * face, the *picker* is the active screen and deleting it corrupts
+     * the whole UI. */
+    if (s_parallax_placeholder) lv_obj_delete(s_parallax_placeholder);
+    s_parallax_placeholder = NULL;
 }
 
 const watch_face_t watch_face_parallax = {

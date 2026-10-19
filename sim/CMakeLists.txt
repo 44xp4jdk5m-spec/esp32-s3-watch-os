@@ -66,6 +66,10 @@ set(SIM_SOURCES
     "${WF}/watch_face_flux.c"
     "${WF}/watch_face_california.c"
 
+    # Long-press face picker (opened by holding the mouse on the face)
+    "${WF}/watch_face_picker.c"
+    "${WATCH_ROOT}/components/system_widget/spinner/spinner.c"
+
     # Shared generated fonts / icons used by the launcher
     "${WATCH_ROOT}/components/os/ui_font_QilkaBold42.c"
     "${WATCH_ROOT}/components/os/fonts/noto_font_14.c"

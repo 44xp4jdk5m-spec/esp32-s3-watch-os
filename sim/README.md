@@ -23,9 +23,10 @@ Hardware values are synthesised, because there is nothing to read:
 ## What runs
 
 - Boot splash with the radial progress ring
-- Watch faces: Classic, Minimal, Flux, Hands, California
+- Watch faces: Classic, Minimal, Flux, Parallax (placeholder), Hands, California
+- Watch-face picker — hold the left mouse button on the face for 450 ms
 - Honeycomb launcher (pre-scaled icons)
-- Touch input (mouse), hardware keys (keyboard)
+- Touch input (mouse) and the two hardware buttons (keys `1` / `2`)
 
 Not simulated (they need hardware services or offline-generated models):
 
@@ -76,20 +77,22 @@ it with `-DFETCHCONTENT_SOURCE_DIR_LVGL=/path/to/lvgl`.
 ## Running
 
 ```bash
-./build-sim/watch_sim              # 2× window (820 × 1004)
-./build-sim/watch_sim --scale 1    # native size
+./build-sim/watch_sim              # native size (410 × 502)
+./build-sim/watch_sim --scale 2    # 2× window (820 × 1004)
 ./build-sim/watch_sim --scale 3
 ```
 
-| Key | Action |
+| Key / input | Action |
 |---|---|
-| `1` … `6` | switch watch face (Classic, Minimal, Flux, Parallax, Hands, California) |
-| `H` | open / close the honeycomb launcher |
-| `B` | replay the boot splash |
-| `R` | simulate a raise-to-wake wrist motion |
-| `Esc` | quit |
+| `1` (hold) | GPIO0 / BOOT button — click: face ↔ launcher; long press (1 s): no-op |
+| `2` (hold) | GPIO10 / PWR button — click/long press (2 s): control centre / shutdown (not simulated, logged only) |
 | Left click / drag | touch |
+| Left press 450 ms | open the watch-face picker (same gesture as the device) |
 | Right drag | tilt the watch (IMU) |
+| `Esc` | quit |
+
+Faces are chosen exactly like on the watch: long-press the face, swipe the
+carousel, tap the centred card. There are no face hotkeys.
 
 ## Headless screenshots
 

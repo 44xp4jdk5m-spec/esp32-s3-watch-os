@@ -7,10 +7,15 @@
  */
 #include <SDL2/SDL.h>
 
+#include "hw_touch.h"
 #include "sim_display.h"
 #include "sim_input.h"
 #include "sim_platform.h"
 
+
+/* The pointer indev also backs hw_touch_get_indev(), which the watch-face
+ * picker polls for its long-press gesture. */
+static lv_indev_t *s_touch_indev = NULL;
 
 /* ── Pointer (mouse = finger) ─────────────────────────────────────── */
 static void pointer_read(lv_indev_t *indev, lv_indev_data_t *data)
@@ -84,7 +89,15 @@ lv_indev_t *sim_input_init(void)
     lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
     lv_indev_set_read_cb(indev, pointer_read);
     lv_indev_set_mode(indev, LV_INDEV_MODE_TIMER);
+    s_touch_indev = indev;
     return indev;
+}
+
+/* Firmware API: the picker polls this indev to detect a 450 ms long-press.
+ * On the host the mouse plays the part of the touch panel. */
+lv_indev_t *hw_touch_get_indev(void)
+{
+    return s_touch_indev;
 }
 
 lv_indev_t *sim_input_init_keypad(void)
