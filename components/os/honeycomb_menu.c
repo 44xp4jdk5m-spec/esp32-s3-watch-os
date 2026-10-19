@@ -565,6 +565,9 @@ typedef struct {
 } honeycomb_menu_t;
 
 static honeycomb_menu_t *g_menu = NULL;
+/* True while honeycomb_menu_destroy() is tearing the menu down, so a nested
+ * call (SCROLL_END fired by lv_anim_delete) can't free state twice. */
+static bool s_destroying = false;
 
 /*============================================================================
  * Icon Array Accessors
@@ -1117,6 +1120,10 @@ static void honeycomb_start_momentum(void)
 
 static void page_event_cb(lv_event_t *e)
 {
+    /* The menu may have been torn down already (destroy() deletes the scroll
+     * animation, which makes LVGL fire SCROLL_END synchronously). */
+    if (!g_menu) return;
+
     lv_event_code_t code = lv_event_get_code(e);
 
     switch (code) {
@@ -1232,6 +1239,8 @@ static void page_event_cb(lv_event_t *e)
 
 static void icon_event_cb(lv_event_t *e)
 {
+    if (!g_menu) return;
+
     lv_event_code_t code = lv_event_get_code(e);
 
     /* Long-press on an icon (distinct-icons mode only) enters rearrange
@@ -1999,7 +2008,16 @@ void honeycomb_menu_create(void)
 
 void honeycomb_menu_destroy(void)
 {
-    if (!g_menu) return;
+    /* Re-entrancy guard.  Deleting the page's scroll animation below fires
+     * LV_EVENT_SCROLL_END synchronously, and that handler calls
+     * honeycomb_menu_destroy() again.  The nested call used to free g_menu and
+     * the outer call then dereferenced NULL (SIGSEGV when launching from an
+     * icon). */
+    if (!g_menu || s_destroying) return;
+    s_destroying = true;
+
+    honeycomb_menu_t *menu = g_menu;
+    g_menu = NULL;              /* look inactive to any late callback */
 
     ESP_LOGI(TAG, "Destroying honeycomb menu...");
 
@@ -2009,32 +2027,39 @@ void honeycomb_menu_destroy(void)
     /* Remove display event callback FIRST */
     lv_display_remove_event_cb_with_user_data(lv_display_get_default(), refr_start_cb, NULL);
 
+    /* Detach the gesture handler before the anim delete: SCROLL_END must not
+     * reach page_event_cb while the menu is being freed. */
+    if (menu->page_obj) {
+        lv_obj_remove_event_cb(menu->page_obj, page_event_cb);
+    }
+
     /* Stop the spring/touch-fade driver before freeing any state. */
-    if (g_menu->fx_timer) {
-        lv_timer_delete(g_menu->fx_timer);
-        g_menu->fx_timer = NULL;
+    if (menu->fx_timer) {
+        lv_timer_delete(menu->fx_timer);
+        menu->fx_timer = NULL;
     }
 
     /* Cancel any pending vertical entry-animation timers so a destroyed
      * menu can't re-fire them on the next, re-created menu. */
-    for (int i = 0; i < g_menu->entry_timer_count; i++) {
-        if (g_menu->entry_timers[i]) lv_timer_delete(g_menu->entry_timers[i]);
+    for (int i = 0; i < menu->entry_timer_count; i++) {
+        if (menu->entry_timers[i]) lv_timer_delete(menu->entry_timers[i]);
     }
-    g_menu->entry_timer_count = 0;
+    menu->entry_timer_count = 0;
 
-    if (g_menu->page_obj) {
+    if (menu->page_obj) {
         /* Kill any in-flight glide/snap animation on the page before the
          * object (and its callbacks) are freed — otherwise a late anim tick
          * dereferences freed memory and panics. */
-        lv_anim_delete(g_menu->page_obj, NULL);
-        lv_obj_del(g_menu->page_obj);
-        g_menu->page_obj = NULL;
+        lv_anim_delete(menu->page_obj, NULL);
+        lv_obj_del(menu->page_obj);
+        menu->page_obj = NULL;
     }
 
-    heap_caps_free(g_menu->icon_list);
-    heap_caps_free(g_menu->icon_pivot);
-    heap_caps_free(g_menu);
-    g_menu = NULL;
+    heap_caps_free(menu->icon_list);
+    heap_caps_free(menu->icon_pivot);
+    heap_caps_free(menu);
+
+    s_destroying = false;
 
     ESP_LOGI(TAG, "Honeycomb menu destroyed");
 }

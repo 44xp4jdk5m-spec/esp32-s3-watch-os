@@ -56,6 +56,13 @@ static bool     s_open_cc         = false;
 static bool     s_open_flashlight = false;
 static bool     s_open_settings   = false;
 
+/* Scripted tap (headless click tests): --tap X,Y */
+static int      s_tap_x = -1;
+static int      s_tap_y = -1;
+static int      s_tap_phase;
+static uint32_t s_tap_t0;
+static uint32_t s_boot_done_ms;
+
 /* Hardware-button state: key 1 = GPIO0 (BOOT), key 2 = GPIO10 (PWR). */
 static bool     s_btn_down[2];
 static bool     s_btn_long[2];
@@ -164,6 +171,7 @@ static void finish_boot(void)
     watch_face_activate(s_face_id);
     g_current_screen = APP_SCREEN_WATCH_FACE;
     s_booting = false;
+    s_boot_done_ms = now_ms();
     printf("[sim] boot complete — face id %u\n", s_face_id);
 
     if (s_open_launcher) {
@@ -352,6 +360,8 @@ int main(int argc, char **argv)
             s_open_flashlight = true;
         } else if (strcmp(argv[i], "--settings") == 0) {
             s_open_settings = true;
+        } else if (strcmp(argv[i], "--tap") == 0 && i + 1 < argc) {
+            sscanf(argv[++i], "%d,%d", &s_tap_x, &s_tap_y);
         } else if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
             printf("usage: %s [options]\n", argv[0]);
             printf("  --scale N        window scale 1..4 (default 1)\n");
@@ -363,6 +373,7 @@ int main(int argc, char **argv)
             printf("  --activity       open the activity app after boot\n");
             printf("  --noise          open the noise app after boot\n");
             printf("  --settings       open the settings app after boot\n");
+            printf("  --tap X,Y        tap the screen at X,Y (800 ms after boot)\n");
             printf("  --cc             open the control center after boot\n");
             printf("  --flashlight     open the control center + flashlight after boot\n");
             printf("  --shot FILE      save a BMP frame to FILE and exit\n");
@@ -378,6 +389,12 @@ int main(int argc, char **argv)
         fprintf(stderr, "failed to initialise the SDL display\n");
         return 1;
     }
+
+    /* LV_USE_PERF_MONITOR auto-shows the FPS/CPU overlay on every display.
+     * The simulator only wants it when Settings toggles it on. */
+#if LV_USE_PERF_MONITOR
+    lv_sysmon_hide_performance(NULL);
+#endif
     sim_input_init();
     sim_input_init_keypad();
 
@@ -415,6 +432,20 @@ int main(int argc, char **argv)
 
         if (!s_booting) handle_buttons(SDL_GetKeyboardState(NULL));
 
+        /* Scripted tap: press 800 ms after boot, release 120 ms later. */
+        if (s_tap_x >= 0 && !s_booting) {
+            const uint32_t tnow = now_ms();
+            if (s_tap_phase == 0 && (tnow - s_boot_done_ms) >= 800) {
+                sim_input_synthetic_touch(s_tap_x, s_tap_y, true);
+                s_tap_phase = 1;
+                s_tap_t0 = tnow;
+                printf("[sim] tap %d,%d\n", s_tap_x, s_tap_y);
+            } else if (s_tap_phase == 1 && (tnow - s_tap_t0) >= 120) {
+                sim_input_synthetic_touch(s_tap_x, s_tap_y, false);
+                s_tap_phase = 2;
+            }
+        }
+
         /* Launcher tile clicks set the same g_pending_* flags the firmware
          * uses; the simulator acts on them here. */
         if (g_pending_calculator) {
@@ -423,7 +454,8 @@ int main(int argc, char **argv)
         }
         if (g_pending_activity) {
             g_pending_activity = false;
-         
+            open_activity();
+        }
         if (g_pending_noise) {
             g_pending_noise = false;
             open_noise();
@@ -450,7 +482,6 @@ int main(int argc, char **argv)
             g_pending_cc_settings_target = -1;
             settings_ui_launch_from_cc(t);
             g_current_screen = APP_SCREEN_SETTINGS;
-        }   open_activity();
         }
 
         /* Long-press on the face opens the picker (the same 450 ms gesture

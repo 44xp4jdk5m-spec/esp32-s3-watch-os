@@ -17,10 +17,30 @@
  * picker polls for its long-press gesture. */
 static lv_indev_t *s_touch_indev = NULL;
 
+/* Scripted touch used by --tap (headless click tests). */
+static bool       s_syn_valid   = false;
+static bool       s_syn_pressed = false;
+static lv_point_t s_syn_pt      = { 0, 0 };
+
+void sim_input_synthetic_touch(int x, int y, bool pressed)
+{
+    s_syn_pt.x      = (lv_coord_t)x;
+    s_syn_pt.y      = (lv_coord_t)y;
+    s_syn_pressed   = pressed;
+    s_syn_valid     = true;
+}
+
 /* ── Pointer (mouse = finger) ─────────────────────────────────────── */
 static void pointer_read(lv_indev_t *indev, lv_indev_data_t *data)
 {
     (void)indev;
+
+    if (s_syn_valid) {
+        data->point = s_syn_pt;
+        data->state = s_syn_pressed ? LV_INDEV_STATE_PRESSED
+                                    : LV_INDEV_STATE_RELEASED;
+        return;
+    }
 
     static lv_point_t last = { 0, 0 };
     int x = 0, y = 0;
