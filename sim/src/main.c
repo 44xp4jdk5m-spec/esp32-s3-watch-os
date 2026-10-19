@@ -63,6 +63,10 @@ static int      s_tap_phase;
 static uint32_t s_tap_t0;
 static uint32_t s_boot_done_ms;
 
+/* Scripted GPIO0 click (headless close tests): --back-after MS */
+static int      s_back_after = -1;
+static bool     s_back_done  = false;
+
 /* Hardware-button state: key 1 = GPIO0 (BOOT), key 2 = GPIO10 (PWR). */
 static bool     s_btn_down[2];
 static bool     s_btn_long[2];
@@ -362,6 +366,8 @@ int main(int argc, char **argv)
             s_open_settings = true;
         } else if (strcmp(argv[i], "--tap") == 0 && i + 1 < argc) {
             sscanf(argv[++i], "%d,%d", &s_tap_x, &s_tap_y);
+        } else if (strcmp(argv[i], "--back-after") == 0 && i + 1 < argc) {
+            s_back_after = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
             printf("usage: %s [options]\n", argv[0]);
             printf("  --scale N        window scale 1..4 (default 1)\n");
@@ -374,6 +380,7 @@ int main(int argc, char **argv)
             printf("  --noise          open the noise app after boot\n");
             printf("  --settings       open the settings app after boot\n");
             printf("  --tap X,Y        tap the screen at X,Y (800 ms after boot)\n");
+            printf("  --back-after MS  click GPIO0 MS after boot (tests app close paths)\n");
             printf("  --cc             open the control center after boot\n");
             printf("  --flashlight     open the control center + flashlight after boot\n");
             printf("  --shot FILE      save a BMP frame to FILE and exit\n");
@@ -431,6 +438,14 @@ int main(int argc, char **argv)
         }
 
         if (!s_booting) handle_buttons(SDL_GetKeyboardState(NULL));
+
+        /* Scripted GPIO0 (BOOT) click, to exercise app close paths. */
+        if (s_back_after >= 0 && !s_back_done && !s_booting &&
+            (now_ms() - s_boot_done_ms) >= (uint32_t)s_back_after) {
+            s_back_done = true;
+            printf("[sim] GPIO0 click (scripted)\n");
+            sim_button_event(SIM_BTN_BOOT, SIM_BTN_CLICK);
+        }
 
         /* Scripted tap: press 800 ms after boot, release 120 ms later. */
         if (s_tap_x >= 0 && !s_booting) {

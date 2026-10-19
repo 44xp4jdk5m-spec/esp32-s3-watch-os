@@ -128,6 +128,18 @@ SDL_VIDEODRIVER=dummy ./build-sim/watch_sim \
 (the Flux face uses the seconds to sweep its panels). `--shot-after` is the
 delay in milliseconds from process start.
 
+Two hooks make tap-driven flows testable without a mouse:
+
+```bash
+# launcher -> tap the calculator tile -> GPIO0 back to the watch face
+SDL_VIDEODRIVER=dummy ./build-sim/watch_sim --demo-time --launcher \
+    --tap 96,250 --back-after 3500 --shot calc.bmp --shot-after 7000
+```
+
+`--tap X,Y` presses at X,Y 800 ms after boot and releases 120 ms later;
+`--back-after MS` clicks GPIO0 (BOOT) MS after boot, so app close paths can be
+exercised headlessly.
+
 Convert to PNG:
 
 ```bash
