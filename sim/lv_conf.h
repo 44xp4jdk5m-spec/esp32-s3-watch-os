@@ -13,6 +13,16 @@
 
 #define LV_COLOR_DEPTH 16
 
+/* The Noise app builds an 8-stop background gradient (noise_ui.c).  The
+ * LVGL default is 2, which overflows lv_grad_dsc_t.stops[] and corrupts
+ * stops_count. */
+#define LV_GRADIENT_MAX_STOPS 8
+
+/* An LVGL assert on the host means the UI is broken.  The default handler
+ * spins forever, which looks like a hang; trap instead so the failure is
+ * visible (and gdb can catch it). */
+#define LV_ASSERT_HANDLER __builtin_trap();
+
 /* Single-threaded: the SDL loop calls lv_timer_handler(). */
 #define LV_USE_OS LV_OS_NONE
 
@@ -55,6 +65,7 @@
 #define LV_FONT_MONTSERRAT_26 1
 #define LV_FONT_MONTSERRAT_28 1
 #define LV_FONT_MONTSERRAT_32 1
+#define LV_FONT_MONTSERRAT_36 1
 #define LV_FONT_MONTSERRAT_38 1
 #define LV_FONT_MONTSERRAT_48 1
 #define LV_FONT_DEFAULT &lv_font_montserrat_14

@@ -28,13 +28,15 @@ Hardware values are synthesised, because there is nothing to read:
 - Honeycomb launcher (pre-scaled icons)
 - **Calculator** — tap its launcher tile, or start with `--calculator`
 - **Activity** — tap its launcher tile, or start with `--activity`
+- **Noise** — tap its launcher tile, or start with `--noise` (the mic is a
+  synthetic tone, so the meter moves on its own)
 - Touch input (mouse) and the two hardware buttons (keys `1` / `2`)
 
 Not simulated (they need hardware services or offline-generated models):
 
 - Parallax face — shows a placeholder; build the depth layers with
   `tools/parallax_face/build_parallax_face.py` to run it on the device
-- Settings, Photo and Noise apps (next on the list)
+- Settings and Photo apps (next on the list)
 - QuickJS apps, BLE/ANCS, WiFi, OTA, USB MSC
 
 ## Prerequisites

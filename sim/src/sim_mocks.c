@@ -7,6 +7,7 @@
  * tied to ESP-IDF services (NVS, PMIC, RTC, SD card).  Here they are either
  * backed by the host machine or by made-up values.
  */
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,6 +21,7 @@
 #include "app_notification_center.h"
 #include "app_power.h"
 #include "app_ui.h"
+#include "hw_audio.h"
 #include "hw_display.h"
 #include "hw_imu.h"
 #include "hw_rtc.h"
@@ -220,6 +222,56 @@ esp_err_t hw_imu_read(hw_imu_data_t *data)
     data->accel_z     = 9.81f;
     data->temperature = 31.5f;
     return ESP_OK;
+}
+
+/* ── Audio: synthetic microphone ──────────────────────────────────── */
+/* There is no codec on the host.  hw_audio_get_mic() hands out a
+ * non-NULL sentinel and esp_codec_dev_read() synthesises a quiet tone
+ * whose amplitude drifts slowly, so the Noise app's meter moves. */
+esp_err_t hw_audio_init(void) { return ESP_OK; }
+esp_err_t hw_audio_deinit(void) { return ESP_OK; }
+esp_err_t hw_audio_sleep(void) { return ESP_OK; }
+esp_err_t hw_audio_wake(void) { return ESP_OK; }
+
+esp_err_t hw_audio_set_volume(uint8_t percent)
+{
+    (void)percent;
+    return ESP_OK;
+}
+
+esp_err_t hw_audio_mute(bool mute)
+{
+    (void)mute;
+    return ESP_OK;
+}
+
+esp_codec_dev_handle_t hw_audio_get_mic(void)
+{
+    return (esp_codec_dev_handle_t)(uintptr_t)1;
+}
+
+int esp_codec_dev_read(esp_codec_dev_handle_t codec_dev, void *data,
+                       int data_size)
+{
+    (void)codec_dev;
+
+    if (!data || data_size < (int)sizeof(int16_t)) return -1;
+
+    static double phase;
+    int16_t *pcm = (int16_t *)data;
+    const int n  = data_size / (int)sizeof(int16_t);
+
+    for (int i = 0; i < n; i++) {
+        phase += 0.07;
+        /* Slow amplitude drift (≈1 Hz beat) + a little noise. */
+        const double level = 0.35 + 0.30 * sin(phase * 0.0009);
+        const int    amp   = (int)(800 + 2200 * level);
+        int v = (int)(amp * sin(phase)) + ((rand() % 400) - 200);
+        if (v > 32767)  v = 32767;
+        if (v < -32768) v = -32768;
+        pcm[i] = (int16_t)v;
+    }
+    return 0;
 }
 
 /* ── Power (AOD) ──────────────────────────────────────────────────── */

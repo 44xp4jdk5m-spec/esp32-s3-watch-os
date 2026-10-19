@@ -29,6 +29,7 @@
 #include "app_events.h"
 #include "calculator_ui.h"
 #include "honeycomb_menu.h"
+#include "noise_ui.h"
 #include "sim_display.h"
 #include "sim_input.h"
 #include "sim_platform.h"
@@ -46,6 +47,7 @@ static bool     s_open_launcher  = false;
 static bool     s_open_picker    = false;
 static bool     s_open_calculator = false;
 static bool     s_open_activity   = false;
+static bool     s_open_noise      = false;
 
 /* Hardware-button state: key 1 = GPIO0 (BOOT), key 2 = GPIO10 (PWR). */
 static bool     s_btn_down[2];
@@ -114,6 +116,14 @@ static void open_activity(void)
     printf("[sim] activity opened\n");
 }
 
+static void open_noise(void)
+{
+    if (honeycomb_menu_is_active()) honeycomb_menu_destroy();
+    noise_ui_create();
+    g_current_screen = APP_SCREEN_NOISE;
+    printf("[sim] noise opened\n");
+}
+
 static void finish_boot(void)
 {
     ui_boot_up_complete();
@@ -131,6 +141,8 @@ static void finish_boot(void)
         open_calculator();
     } else if (s_open_activity) {
         open_activity();
+    } else if (s_open_noise) {
+        open_noise();
     }
 }
 
@@ -186,6 +198,12 @@ static void sim_button_event(sim_btn_t btn, sim_btn_event_t evt)
             activity_ui_handle_back();
             g_current_screen = APP_SCREEN_WATCH_FACE;
             printf("[sim] activity closed\n");
+            return;
+        }
+        if (g_current_screen == APP_SCREEN_NOISE && noise_ui_is_active()) {
+            noise_ui_handle_back();
+            g_current_screen = APP_SCREEN_WATCH_FACE;
+            printf("[sim] noise closed\n");
             return;
         }
         if (watch_face_picker_is_open()) {
@@ -254,6 +272,8 @@ int main(int argc, char **argv)
             s_open_calculator = true;
         } else if (strcmp(argv[i], "--activity") == 0) {
             s_open_activity = true;
+        } else if (strcmp(argv[i], "--noise") == 0) {
+            s_open_noise = true;
         } else if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
             printf("usage: %s [options]\n", argv[0]);
             printf("  --scale N        window scale 1..4 (default 1)\n");
@@ -263,6 +283,7 @@ int main(int argc, char **argv)
             printf("  --picker         open the watch-face picker after boot\n");
             printf("  --calculator     open the calculator after boot\n");
             printf("  --activity       open the activity app after boot\n");
+            printf("  --noise          open the noise app after boot\n");
             printf("  --shot FILE      save a BMP frame to FILE and exit\n");
             printf("  --shot-after MS  delay before --shot (default boot + 1200 ms)\n");
             return 0;
@@ -318,7 +339,11 @@ int main(int argc, char **argv)
         }
         if (g_pending_activity) {
             g_pending_activity = false;
-            open_activity();
+         
+        if (g_pending_noise) {
+            g_pending_noise = false;
+            open_noise();
+        }   open_activity();
         }
 
         /* Long-press on the face opens the picker (the same 450 ms gesture

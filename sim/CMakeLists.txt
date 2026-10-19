@@ -87,6 +87,8 @@ set(SIM_SOURCES
     "${WATCH_ROOT}/components/apps/calculator/calculator_ui.c"
     "${WATCH_ROOT}/components/apps/activity/activity_ui.c"
     "${WATCH_ROOT}/components/apps/activity/activity_pages.c"
+    "${WATCH_ROOT}/components/apps/noise/noise_ui.c"
+    "${WATCH_ROOT}/components/apps/noise/ui/ui_noise.c"
 
     # Simulator glue
     "${SIM_DIR}/src/main.c"
@@ -138,6 +140,8 @@ target_include_directories(watch_sim PRIVATE
     "${WATCH_ROOT}/components/os/services"
     "${WATCH_ROOT}/components/apps/calculator"
     "${WATCH_ROOT}/components/apps/activity"
+    "${WATCH_ROOT}/components/apps/noise"
+    "${WATCH_ROOT}/components/apps/noise/ui"
     "${WATCH_ROOT}/components/system_widget"
     "${WATCH_ROOT}/components/system_widget/keyboard"
     "${WATCH_ROOT}/components/system_widget/spinner"
