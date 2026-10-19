@@ -26,13 +26,15 @@ Hardware values are synthesised, because there is nothing to read:
 - Watch faces: Classic, Minimal, Flux, Parallax (placeholder), Hands, California
 - Watch-face picker — hold the left mouse button on the face for 450 ms
 - Honeycomb launcher (pre-scaled icons)
+- **Calculator** — tap its launcher tile, or start with `--calculator`
+- **Activity** — tap its launcher tile, or start with `--activity`
 - Touch input (mouse) and the two hardware buttons (keys `1` / `2`)
 
 Not simulated (they need hardware services or offline-generated models):
 
 - Parallax face — shows a placeholder; build the depth layers with
   `tools/parallax_face/build_parallax_face.py` to run it on the device
-- Settings, Activity, Calculator, Photo, Noise apps
+- Settings, Photo and Noise apps (next on the list)
 - QuickJS apps, BLE/ANCS, WiFi, OTA, USB MSC
 
 ## Prerequisites

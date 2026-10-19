@@ -21,6 +21,7 @@
 #include "app_power.h"
 #include "app_ui.h"
 #include "hw_display.h"
+#include "hw_imu.h"
 #include "hw_rtc.h"
 #include "js_app_registry.h"
 #include "sim_platform.h"
@@ -180,6 +181,44 @@ esp_err_t hw_rtc_get_time(hw_rtc_time_t *out)
     out->wday  = (uint8_t)tm_now.tm_wday;
     out->month = (uint8_t)(tm_now.tm_mon + 1);
     out->year  = (uint8_t)((tm_now.tm_year + 1900) % 100);
+    return ESP_OK;
+}
+
+time_t hw_rtc_to_unix(const hw_rtc_time_t *t)
+{
+    if (!t) return 0;
+    struct tm tm = {0};
+    tm.tm_sec  = t->sec;
+    tm.tm_min  = t->min;
+    tm.tm_hour = t->hour;
+    tm.tm_mday = t->day;
+    tm.tm_mon  = (int)t->month - 1;
+    tm.tm_year = (int)t->year + 100;    /* 0..99 → 2000..2099 */
+    tm.tm_isdst = -1;
+    return mktime(&tm);
+}
+
+void hw_rtc_from_unix(time_t ts, hw_rtc_time_t *t)
+{
+    if (!t) return;
+    struct tm tm;
+    localtime_r(&ts, &tm);
+    t->sec   = (uint8_t)tm.tm_sec;
+    t->min   = (uint8_t)tm.tm_min;
+    t->hour  = (uint8_t)tm.tm_hour;
+    t->day   = (uint8_t)tm.tm_mday;
+    t->wday  = (uint8_t)tm.tm_wday;
+    t->month = (uint8_t)(tm.tm_mon + 1);
+    t->year  = (uint8_t)((tm.tm_year + 1900) % 100);
+}
+
+/* ── IMU: stationary watch, screen facing up ──────────────────────── */
+esp_err_t hw_imu_read(hw_imu_data_t *data)
+{
+    if (!data) return ESP_ERR_INVALID_ARG;
+    memset(data, 0, sizeof(*data));
+    data->accel_z     = 9.81f;
+    data->temperature = 31.5f;
     return ESP_OK;
 }
 

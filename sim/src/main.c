@@ -24,8 +24,10 @@
 
 #include "lvgl.h"
 
+#include "activity_ui.h"
 #include "app_config.h"
 #include "app_events.h"
+#include "calculator_ui.h"
 #include "honeycomb_menu.h"
 #include "sim_display.h"
 #include "sim_input.h"
@@ -42,6 +44,8 @@ static uint32_t s_boot_start_ms  = 0;
 static uint8_t  s_face_id        = WATCH_FACE_MINIMAL;
 static bool     s_open_launcher  = false;
 static bool     s_open_picker    = false;
+static bool     s_open_calculator = false;
+static bool     s_open_activity   = false;
 
 /* Hardware-button state: key 1 = GPIO0 (BOOT), key 2 = GPIO10 (PWR). */
 static bool     s_btn_down[2];
@@ -94,6 +98,22 @@ static void close_launcher(void)
     printf("[sim] launcher closed\n");
 }
 
+static void open_calculator(void)
+{
+    if (honeycomb_menu_is_active()) honeycomb_menu_destroy();
+    calculator_ui_create();
+    g_current_screen = APP_SCREEN_CALCULATOR;
+    printf("[sim] calculator opened\n");
+}
+
+static void open_activity(void)
+{
+    if (honeycomb_menu_is_active()) honeycomb_menu_destroy();
+    activity_ui_create();
+    g_current_screen = APP_SCREEN_ACTIVITY;
+    printf("[sim] activity opened\n");
+}
+
 static void finish_boot(void)
 {
     ui_boot_up_complete();
@@ -107,6 +127,10 @@ static void finish_boot(void)
         open_launcher();
     } else if (s_open_picker) {
         watch_face_picker_open();
+    } else if (s_open_calculator) {
+        open_calculator();
+    } else if (s_open_activity) {
+        open_activity();
     }
 }
 
@@ -149,6 +173,19 @@ static void sim_button_event(sim_btn_t btn, sim_btn_event_t evt)
         if (evt == SIM_BTN_LONG_PRESS) {
             /* app_events.c only acts on GPIO0 clicks. */
             printf("[sim] GPIO0 long-press\n");
+            return;
+        }
+        if (g_current_screen == APP_SCREEN_CALCULATOR &&
+            calculator_ui_is_active()) {
+            calculator_ui_handle_back();
+            g_current_screen = APP_SCREEN_WATCH_FACE;
+            printf("[sim] calculator closed\n");
+            return;
+        }
+        if (g_current_screen == APP_SCREEN_ACTIVITY && activity_ui_is_active()) {
+            activity_ui_handle_back();
+            g_current_screen = APP_SCREEN_WATCH_FACE;
+            printf("[sim] activity closed\n");
             return;
         }
         if (watch_face_picker_is_open()) {
@@ -213,6 +250,10 @@ int main(int argc, char **argv)
             s_open_launcher = true;
         } else if (strcmp(argv[i], "--picker") == 0) {
             s_open_picker = true;
+        } else if (strcmp(argv[i], "--calculator") == 0) {
+            s_open_calculator = true;
+        } else if (strcmp(argv[i], "--activity") == 0) {
+            s_open_activity = true;
         } else if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
             printf("usage: %s [options]\n", argv[0]);
             printf("  --scale N        window scale 1..4 (default 1)\n");
@@ -220,6 +261,8 @@ int main(int argc, char **argv)
             printf("  --face N         watch face id to show after boot\n");
             printf("  --launcher       open the honeycomb launcher after boot\n");
             printf("  --picker         open the watch-face picker after boot\n");
+            printf("  --calculator     open the calculator after boot\n");
+            printf("  --activity       open the activity app after boot\n");
             printf("  --shot FILE      save a BMP frame to FILE and exit\n");
             printf("  --shot-after MS  delay before --shot (default boot + 1200 ms)\n");
             return 0;
@@ -266,6 +309,17 @@ int main(int argc, char **argv)
         }
 
         if (!s_booting) handle_buttons(SDL_GetKeyboardState(NULL));
+
+        /* Launcher tile clicks set the same g_pending_* flags the firmware
+         * uses; the simulator acts on them here. */
+        if (g_pending_calculator) {
+            g_pending_calculator = false;
+            open_calculator();
+        }
+        if (g_pending_activity) {
+            g_pending_activity = false;
+            open_activity();
+        }
 
         /* Long-press on the face opens the picker (the same 450 ms gesture
          * as the device); thumbnails then fill in one per iteration. */

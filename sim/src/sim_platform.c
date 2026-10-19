@@ -209,12 +209,41 @@ TickType_t xTaskGetTickCount(void)
     return (TickType_t)(esp_timer_get_time() / 1000);
 }
 
+typedef struct {
+    TaskFunction_t fn;
+    void         *arg;
+} sim_task_t;
+
+static void *sim_task_trampoline(void *p)
+{
+    sim_task_t t = *(sim_task_t *)p;
+    free(p);
+    t.fn(t.arg);
+    return NULL;
+}
+
 BaseType_t xTaskCreate(TaskFunction_t fn, const char *name, uint32_t stack,
                        void *arg, UBaseType_t prio, TaskHandle_t *out)
 {
     (void)name; (void)stack; (void)prio;
-    /* Run the task body once, inline — enough for the UI's one-shot work. */
-    if (fn) fn(arg);
+
+    /* Real detached pthread: some firmware tasks (e.g. the Activity IMU
+     * sampler) loop until their run flag is cleared, so running the body
+     * inline would never return from xTaskCreate(). */
+    if (!fn) return 0;
+
+    sim_task_t *t = (sim_task_t *)malloc(sizeof(*t));
+    if (!t) return 0;
+    t->fn  = fn;
+    t->arg = arg;
+
+    pthread_t th;
+    if (pthread_create(&th, NULL, sim_task_trampoline, t) != 0) {
+        free(t);
+        return 0;
+    }
+    pthread_detach(th);
+
     if (out) *out = (TaskHandle_t)1;
     return pdPASS;
 }
