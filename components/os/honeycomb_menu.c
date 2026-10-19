@@ -162,6 +162,10 @@ static int32_t g_c0r0_y = (PAGE_SCRL_HEIGHT >> 1);
 
 #define VERT_ICONS_PER_ROW_EVEN   3
 #define VERT_ICONS_PER_ROW_ODD    4
+/* Column pitch.  ICON_OUTER_DIAMETER (110) x 4 = 440 px does not fit the
+ * 410 px panel, so the left/right icons were always clipped.  100 px keeps
+ * a 4 px gap between the 96 px icons and a 5 px screen margin. */
+#define VERT_COL_PITCH            ((LCD_H_RES - 10) / 4)
 #define VERT_ROW_HEIGHT           ((ICON_OUTER_DIAMETER * 866) / 1000)
 #define VERT_TOP_PADDING          (ICON_OUTER_RADIUS * 2)
 #define VERT_PAGE_WIDTH           LCD_H_RES
@@ -324,10 +328,10 @@ static void layout_get_icons_init_coordinate_vertical(int32_t row_idx, int32_t c
                                                        int32_t *x, int32_t *y)
 {
     int32_t icons_in_row = (row_idx % 2 == 0) ? VERT_ICONS_PER_ROW_EVEN : VERT_ICONS_PER_ROW_ODD;
-    int32_t row_width = icons_in_row * ICON_OUTER_DIAMETER;
+    int32_t row_width = icons_in_row * VERT_COL_PITCH;
 
     /* Center the row horizontally within the screen width */
-    *x = ((LCD_H_RES - row_width) / 2) + (ICON_OUTER_DIAMETER / 2) + (col_idx * ICON_OUTER_DIAMETER);
+    *x = ((LCD_H_RES - row_width) / 2) + (VERT_COL_PITCH / 2) + (col_idx * VERT_COL_PITCH);
     *y = VERT_TOP_PADDING + (row_idx * VERT_ROW_HEIGHT) + (ICON_OUTER_RADIUS);
 }
 
@@ -1689,6 +1693,10 @@ static void honeycomb_ui_init(void)
     lv_obj_t *page = lv_obj_create(lv_screen_active());
     lv_obj_set_style_bg_color(page, lv_color_black(), LV_PART_MAIN);
     lv_obj_set_style_border_width(page, 0, LV_PART_MAIN);
+    /* Icons are positioned with absolute coordinates in page space.  The
+     * theme's default 16 px padding shifts the whole grid right/down and
+     * pushes the outer column past the right edge of the 410 px panel. */
+    lv_obj_set_style_pad_all(page, 0, LV_PART_MAIN);
 
     /* Page = viewport (screen size). Icons are positioned beyond it,
      * creating the scrollable overflow area. */

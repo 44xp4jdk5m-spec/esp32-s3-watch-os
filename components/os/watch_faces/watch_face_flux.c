@@ -189,6 +189,11 @@ static void flux_build_panels(flux_inst_t *f)
     lv_obj_set_style_bg_opa(f->panel0, LV_OPA_COVER, LV_PART_MAIN);
     lv_obj_set_style_border_width(f->panel0, 0, 0);
     lv_obj_set_style_radius(f->panel0, 0, 0);
+    /* The digit boxes use SquareLine absolute coordinates for a 410x502
+     * panel.  Without this the default 16 px padding shrinks the content
+     * area to 378x470 and the aligned digit boxes land 32 px too far left,
+     * overlapping the neighbouring digit. */
+    lv_obj_set_style_pad_all(f->panel0, 0, 0);
     lv_obj_set_user_data(f->panel0, f);
 
     /* ── panel1 : bottom bar (saved color), starts 0 high ─────────── */
@@ -201,6 +206,7 @@ static void flux_build_panels(flux_inst_t *f)
     lv_obj_set_style_bg_opa(f->panel1, LV_OPA_COVER, LV_PART_MAIN);
     lv_obj_set_style_border_width(f->panel1, 0, 0);
     lv_obj_set_style_radius(f->panel1, 0, 0);
+    lv_obj_set_style_pad_all(f->panel1, 0, 0);   /* keep the 410x502 content area */
     lv_obj_set_user_data(f->panel1, f);
 
     /* ── 8 digit images (4 per panel) ─────────────────────────────── */

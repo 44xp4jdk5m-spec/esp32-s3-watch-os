@@ -50,8 +50,11 @@ app_config_t g_config = {
     .cpu_protection_enabled  = true,
     .power_chips_temp_threshold = 55,
     .cpu_temp_threshold      = 65,
-    .honeycomb_distinct_icons = true,
-    .honeycomb_layout_mode   = 1,
+    /* Match app_config.c's factory defaults: the 19-icon hex honeycomb.
+     * Distinct-icons mode with 48 icons makes the grid far bigger than the
+     * 410x502 panel, so the right/bottom of the cluster is always clipped. */
+    .honeycomb_distinct_icons = false,
+    .honeycomb_layout_mode   = 0,
     .honeycomb_gap_adjust    = true,
     .vibrator_strength       = 255,
     .vibrator_duration_ms    = 100,
