@@ -1,0 +1,40 @@
+# ── ESP-IDF build output ────────────────────────────────────────────
+build/
+sdkconfig
+sdkconfig.old
+log/
+*.map
+*.elf
+
+# ── Python / virtualenv ─────────────────────────────────────────────
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# ── IDE ─────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.code-workspace
+
+# ── Component manager ───────────────────────────────────────────────
+# Managed components are downloaded from the ESP Component Registry on
+# `idf.py reconfigure`. dependencies.lock is committed to pin versions.
+managed_components/
+
+# ── Private / non-distributable ─────────────────────────────────────
+todo
+tmp/
+screenshot/
+docs/
+
+# ── Large regenerable source assets ─────────────────────────────────
+font/*.ttf
+font/*.otf
+
+# ── Runtime state ───────────────────────────────────────────────────
+spiffs/var/
+
+# ── OS ──────────────────────────────────────────────────────────────
+Thumbs.db
+.DS_Store

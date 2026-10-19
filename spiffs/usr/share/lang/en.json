@@ -1,0 +1,279 @@
+{
+    "lang_name": "English",
+    "lang_code": "en",
+
+    "settings": {
+        "title": "Settings",
+        "wifi": "Wi-Fi",
+        "bluetooth": "Bluetooth",
+        "display": "Display",
+        "power": "Power",
+        "notifications": "Notifications",
+        "sound_haptics": "Sound & Haptics",
+        "apps": "Apps",
+        "app_view": "App View",
+        "storage": "Storage",
+        "time_region": "Time & Region",
+        "general": "General",
+        "language": "Language",
+        "device_info": "Device Info",
+        "experimental": "Experimental",
+        "debug": "Debug",
+        "back": "Back",
+        "battery": "Battery",
+        "sd_card": "SD Card",
+        "google_drive": "Google Drive"
+    },
+
+    "wifi": {
+        "title": "Wi-Fi",
+        "switch_label": "Wi-Fi",
+        "on_desc": "Wi-Fi is ON — time sync active on boot",
+        "off_desc": "Wi-Fi is OFF — RTC calibration skipped",
+        "disabled_note": "When disabled, the watch will not connect\nto any network or calibrate the RTC on boot."
+    },
+
+    "bluetooth": {
+        "title": "Bluetooth",
+        "switch_label": "Bluetooth",
+        "ancs_title": "ANCS",
+        "ancs_label": "Notifications (ANCS)",
+        "pairing_title": "Pairing",
+        "connect_iphone": "Connect to iPhone",
+        "connected": "Connected to iPhone",
+        "pairing": "Pairing... see passcode below",
+        "not_connected": "Not connected"
+    },
+
+    "display": {
+        "title": "Display",
+        "brightness": "Brightness",
+        "always_on": "Always-On Display",
+        "always_on_desc": "After idle timeout, dim into a low-power 1Hz AOD mode with pixel shift instead of turning off. Touch, button or raise wakes it.",
+        "wake_on_raise": "Wake on Raise",
+        "wake_on_raise_desc": "Automatically wake when you\nlift your wrist while the display is off.",
+        "light_sleep": "Light Sleep",
+        "light_sleep_desc": "While the display is off, put the CPU to sleep to save battery (wakes on touch / buttons / raise).",
+        "light_sleep_learn_more": "Light Sleep puts the CPU into a low-power sleep state whenever the display is off. Touch, buttons or wrist-raise wake it instantly.\n\nWhat keeps running:\n· RTC keeps accurate time\n· Alarms and reminders\n· Bluetooth pairing state\n· Low-power wake-on-raise detection\n\nIn typical use this adds up to several extra days of battery life. If touches ever feel unresponsive right after waking, turn this option off.",
+        "dim_timeout": "Dim Timeout",
+        "dim_timeout_5s": "5 seconds",
+        "dim_timeout_15s": "15 seconds",
+        "dim_timeout_30s": "30 seconds",
+        "dim_timeout_60s": "1 minute",
+        "dim_timeout_300s": "5 minutes",
+        "dim_timeout_desc": "Time before the display dims to half brightness."
+    },
+
+    "power": {
+        "title": "Power",
+        "power_chips": "Power Chips",
+        "cpu": "CPU",
+        "charge_limit": "Charge Limit (80%)",
+        "charge_limit_desc": "Stop charging at 80% to extend battery lifespan.",
+        "low_power": "Low Power Mode",
+        "low_power_desc": "Disable animations, 15 FPS, 5s dim, 80% brightness.",
+        "cpu_protection": "CPU Protection",
+        "cpu_protection_desc": "Monitor CPU/PMIC temps and throttle if overheating.",
+        "chips_temp_threshold": "Power Chips Temp Threshold",
+        "chips_temp_threshold_desc": "AXP2101 PMIC temperature limit.\nWhen exceeded, charging stops.",
+        "cpu_temp_threshold": "CPU Temp Threshold"
+    },
+
+    "notifications": {
+        "title": "Notifications",
+        "coming_soon": "Notification settings coming soon"
+    },
+
+    "sound": {
+        "title": "Sound & Haptics",
+        "silent_mode": "Silent Mode",
+        "silent_mode_desc": "Suppress all sound and vibration.",
+        "haptics": "Haptics",
+        "haptics_desc": "Vibration strength, patterns, and duration",
+        "vibrator_strength": "Vibration Strength",
+        "vibrator_pattern": "Vibration Pattern",
+        "vibrator_duration": "Vibration Duration",
+        "pattern_normal": "Normal",
+        "pattern_double": "Double",
+        "pattern_long": "Long",
+        "pattern_short_short": "Short-Short",
+        "pattern_rapid": "Rapid"
+    },
+
+    "password": {
+        "title": "Password",
+        "enable": "Enable Password",
+        "change": "Change Password",
+        "simple_mode": "Simple Mode (4-digit)"
+    },
+
+    "apps": {
+        "title": "Apps"
+    },
+
+    "app_view": {
+        "title": "App View",
+        "honeycomb": "Honeycomb",
+        "list": "List View",
+        "grid_view": "Grid View",
+        "list_view": "List View",
+        "distinct_icons": "Distinct Icons Only",
+        "distinct_icons_desc": "Hide repeated icons in honeycomb menu.",
+        "layout_mode": "Layout Mode",
+        "layout_hex": "Hex Spiral",
+        "layout_grid": "Vertical Grid",
+        "entry_animation": "Entry Animation",
+        "entry_animation_desc": "Animate icons row-by-row on entry."
+    },
+
+    "storage": {
+        "title": "Storage",
+        "sd_card": "SD Card",
+        "google_drive": "Google Drive",
+        "usb_msc": "USB Mass Storage",
+        "usb_msc_desc": "Enable SD card access via USB.",
+        "wifi_fs": "WiFi File Server",
+        "wifi_fs_desc": "Browse SD card via HTTP.",
+        "eject_sd": "Eject SD Card",
+        "eject_sd_desc": "Safely unmount the SD card before removal.",
+        "ejected": "SD card safely ejected.\nYou may now remove it.",
+        "pending_uploads": "Pending uploads",
+        "status": "Status",
+        "mounted": "Mounted",
+        "not_found": "Not found",
+        "folder_id": "Folder ID",
+        "access_token": "Access Token",
+        "set": "Set",
+        "not_set": "Not set",
+        "card_info": "Card Info",
+        "tinyusb_msc": "TinyUSB Mass Storage",
+        "usb_msc": "USB Mass Storage",
+        "wifi_fs": "WiFi File Server",
+        "upload_to_gdrive": "Upload to Google Drive",
+        "auto_upload": "Auto-Upload",
+        "account": "Account",
+        "wifi_title": "WiFi",
+        "sd_settings": "SD Card storage settings",
+        "gdrive_settings": "Google Drive auto-upload settings"
+    },
+
+    "battery": {
+        "last_charged": "Last Charged to 100%"
+    },
+
+    "time_region": {
+        "title": "Time & Region",
+        "region": "Region",
+        "ntp_server": "NTP Server"
+    },
+
+    "region": {
+        "title": "Region"
+    },
+
+    "ntp": {
+        "title": "NTP Server"
+    },
+
+    "general": {
+        "title": "General",
+        "language": "Language",
+        "device_info": "Device Info",
+        "experimental": "Experimental",
+        "debug": "Debug"
+    },
+
+    "language": {
+        "title": "Language",
+        "english": "English",
+        "tchinese": "繁體中文",
+        "japanese": "日本語"
+    },
+
+    "device_info": {
+        "title": "Device Info",
+        "model_desc": "ESP32-S3 Watch",
+        "version_title": "Version",
+        "version": "v1.0-esp32-port",
+        "model_title": "Model",
+        "model": "ESP32-S3-Touch-AMOLED-2.06"
+    },
+
+    "experimental": {
+        "title": "Experimental",
+        "desc": "Developer options — may affect performance",
+        "color_circle_test": "Color Circle Test",
+        "color_circle_desc": "Replace PNG icons with solid colored circles",
+        "prescaled_icons": "Pre-Scaled Icons",
+        "prescaled_desc": "Use 96×96 RGB565 icons (no PNG decode).\nRequires png_images_rgb565.c",
+        "resolution_scale": "Resolution Scale",
+        "resolution_desc": "Downscale internal resolution (RAM-only)"
+    },
+
+    "debug": {
+        "title": "Debug",
+        "desc": "Debug and performance monitoring options.",
+        "system_title": "System",
+        "log": "Log",
+        "log_desc": "Disable to save CPU clock cycles.\nWhen OFF, all ESP_LOG output is suppressed.",
+        "display_title": "Display",
+        "cpu_monitor": "LVGL CPU Monitor",
+        "cpu_monitor_desc": "Show FPS and CPU usage overlay.\nDisabling hides the performance monitor."
+    },
+
+    "menu": {
+        "app_store": "App Store",
+        "calculator": "Calculator",
+        "clock": "Clock",
+        "messages": "Messages",
+        "music": "Music",
+        "mail": "Mail",
+        "maps": "Maps",
+        "phone": "Phone",
+        "photos": "Photos",
+        "noise": "Noise",
+        "settings": "Settings",
+        "weather": "Weather",
+        "workout": "Workout",
+        "activity": "Activity",
+        "alarm": "Alarm",
+        "breathe": "Breathe",
+        "calendar": "Calendar",
+        "camera": "Camera",
+        "home": "Home",
+        "pulse": "Pulse",
+        "reminders": "Reminders",
+        "remote": "Remote",
+        "stocks": "Stocks",
+        "stopwatch": "Stopwatch",
+        "timer": "Timer",
+        "wallet": "Wallet",
+        "world_clock": "World Clock"
+    },
+
+    "photos": {
+        "title": "Photos",
+        "no_photos": "No photos found",
+        "watch": "Watch",
+        "google_watch": "Google Watch",
+        "count_word": "photos"
+    },
+
+    "common": {
+        "ok": "OK",
+        "cancel": "Cancel",
+        "save": "Save",
+        "delete": "Delete",
+        "confirm": "Confirm",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "on": "On",
+        "off": "Off"
+    },
+
+    "warning": {
+        "title": "High Temperature",
+        "desc": "Smart Watch needs to cool down",
+        "disabled": "WiFi, Bluetooth & Charging disabled"
+    }
+}

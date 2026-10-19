@@ -1,0 +1,12 @@
+{
+  "name": "Breakout",
+  "version": "1.0.0",
+  "entry": "main.js",
+  "icon": "app_icon.bin",
+  "icon_w": 96,
+  "icon_h": 96,
+  "icon_cf": "RGB565A8",
+  "author": "WatchOS",
+  "description": "Tilt-controlled Breakout (QMI8658 IMU). Drag with your finger to move the paddle too.",
+  "permissions": []
+}

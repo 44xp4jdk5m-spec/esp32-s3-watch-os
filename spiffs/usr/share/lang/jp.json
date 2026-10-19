@@ -1,0 +1,278 @@
+{
+    "lang_name": "日本語",
+    "lang_code": "jp",
+
+    "settings": {
+        "title": "設定",
+        "wifi": "Wi-Fi",
+        "bluetooth": "Bluetooth",
+        "display": "ディスプレイ",
+        "power": "電源",
+        "notifications": "通知",
+        "sound_haptics": "サウンドと触覚",
+        "apps": "アプリ",
+        "app_view": "アプリ表示",
+        "storage": "ストレージ",
+        "time_region": "時刻と地域",
+        "general": "一般",
+        "language": "言語",
+        "device_info": "デバイス情報",
+        "experimental": "実験的",
+        "debug": "デバッグ",
+        "back": "戻る",
+        "battery": "バッテリー",
+        "sd_card": "SDカード",
+        "google_drive": "Googleドライブ"
+    },
+
+    "wifi": {
+        "title": "Wi-Fi",
+        "switch_label": "Wi-Fi",
+        "on_desc": "Wi-Fiオン — 起動時に時刻同期が有効",
+        "off_desc": "Wi-Fiオフ — RTC調整をスキップ",
+        "disabled_note": "無効時は、時計がネットワークに\n接続せず、RTC調整も行われません。"
+    },
+
+    "bluetooth": {
+        "title": "Bluetooth",
+        "switch_label": "Bluetooth",
+        "ancs_title": "ANCS",
+        "ancs_label": "通知 (ANCS)",
+        "pairing_title": "ペアリング",
+        "connect_iphone": "iPhoneに接続",
+        "connected": "iPhoneに接続済み",
+        "pairing": "ペアリング中... 以下のパスコードを参照",
+        "not_connected": "未接続"
+    },
+
+    "display": {
+        "title": "ディスプレイ",
+        "brightness": "明るさ",
+        "always_on": "常時表示",
+        "always_on_desc": "アイドルタイムアウト後、オフにする代わりに低消費電力の1Hz AODモード（ピクセルシフト）に調光します。タッチ・ボタン・手首の上げで復帰します。",
+        "wake_on_raise": "持ち上げて起動",
+        "wake_on_raise_desc": "ディスプレイがオフのときに\n手首を持ち上げると自動で起動します。",        "light_sleep": "ライトスリープ",
+        "light_sleep_desc": "画面オフ中はCPUをスリープさせて電池を節約します（タッチ・ボタン・持ち上げで復帰）。",
+        "light_sleep_learn_more": "ライトスリープは、ディスプレイがオフの間、CPUを低消費電力のスリープ状態にします。タッチ・ボタン・手首の上げですぐに復帰します。\n\n動作を続ける機能：\n· RTCによる正確な時刻\n· アラーム・リマインダー\n· Bluetoothのペアリング状態\n· 低消費電力の持ち上げ検出\n\n通常の使用では、電池の持ちが数日長くなります。復帰直後にタッチが反応しない場合は、この設定をオフにしてください。",
+        "dim_timeout": "調光タイムアウト",
+        "dim_timeout_5s": "5秒",
+        "dim_timeout_15s": "15秒",
+        "dim_timeout_30s": "30秒",
+        "dim_timeout_60s": "1分",
+        "dim_timeout_300s": "5分",
+        "dim_timeout_desc": "ディスプレイが半輝度になるまでの時間。"
+    },
+
+    "power": {
+        "title": "電源",
+        "power_chips": "電源チップ",
+        "cpu": "CPU",
+        "charge_limit": "充電制限 (80%)",
+        "charge_limit_desc": "バッテリー寿命を延ばすため80%で充電停止。",
+        "low_power": "低電力モード",
+        "low_power_desc": "アニメーション無効、15FPS、5秒調光、80%輝度。",
+        "cpu_protection": "CPU保護",
+        "cpu_protection_desc": "CPU/PMIC温度を監視し、過熱時に制限。",
+        "chips_temp_threshold": "電源チップ温度閾値",
+        "chips_temp_threshold_desc": "AXP2101 PMIC温度上限。\n超過すると充電が停止します。",
+        "cpu_temp_threshold": "CPU温度閾値"
+    },
+
+    "notifications": {
+        "title": "通知",
+        "coming_soon": "通知設定は近日公開予定"
+    },
+
+    "sound": {
+        "title": "サウンドと触覚",
+        "silent_mode": "サイレントモード",
+        "silent_mode_desc": "すべてのサウンドと振動を抑制。",
+        "haptics": "触覚",
+        "haptics_desc": "振動強度、パターン、持続時間",
+        "vibrator_strength": "振動強度",
+        "vibrator_pattern": "振動パターン",
+        "vibrator_duration": "振動時間",
+        "pattern_normal": "通常",
+        "pattern_double": "ダブル",
+        "pattern_long": "ロング",
+        "pattern_short_short": "ショート-ショート",
+        "pattern_rapid": "ラピッド"
+    },
+
+    "password": {
+        "title": "パスワード",
+        "enable": "パスワード有効",
+        "change": "パスワード変更",
+        "simple_mode": "シンプルモード (4桁)"
+    },
+
+    "apps": {
+        "title": "アプリ"
+    },
+
+    "app_view": {
+        "title": "アプリ表示",
+        "honeycomb": "ハニカム",
+        "list": "リスト表示",
+        "grid_view": "グリッド表示",
+        "list_view": "リスト表示",
+        "distinct_icons": "異なるアイコンのみ",
+        "distinct_icons_desc": "ハニカムメニューで重複アイコンを非表示。",
+        "layout_mode": "レイアウトモード",
+        "layout_hex": "六角スパイラル",
+        "layout_grid": "垂直グリッド",
+        "entry_animation": "エントリアニメーション",
+        "entry_animation_desc": "アイコンを行ごとにアニメーション表示。"
+    },
+
+    "storage": {
+        "title": "ストレージ",
+        "sd_card": "SDカード",
+        "google_drive": "Googleドライブ",
+        "usb_msc": "USBマスストレージ",
+        "usb_msc_desc": "USB経由でSDカードにアクセス。",
+        "wifi_fs": "WiFiファイルサーバー",
+        "wifi_fs_desc": "HTTP経由でSDカードを閲覧。",
+        "eject_sd": "SDカード取り出し",
+        "eject_sd_desc": "取り外す前にSDカードを安全にアンマウント。",
+        "ejected": "SDカードを安全に取り出せます。\n取り外しても問題ありません。",
+        "pending_uploads": "アップロード待ち",
+        "status": "ステータス",
+        "mounted": "マウント済み",
+        "not_found": "見つかりません",
+        "folder_id": "フォルダID",
+        "access_token": "アクセストークン",
+        "set": "設定済み",
+        "not_set": "未設定",
+        "card_info": "カード情報",
+        "tinyusb_msc": "TinyUSBマスストレージ",
+        "usb_msc": "USBマスストレージ",
+        "wifi_fs": "WiFiファイルサーバー",
+        "upload_to_gdrive": "Googleドライブにアップロード",
+        "auto_upload": "自動アップロード",
+        "account": "アカウント",
+        "wifi_title": "WiFi",
+        "sd_settings": "SDカードのストレージ設定",
+        "gdrive_settings": "Googleドライブ自動アップロード設定"
+    },
+
+    "battery": {
+        "last_charged": "最後に100%まで充電"
+    },
+
+    "time_region": {
+        "title": "時刻と地域",
+        "region": "地域",
+        "ntp_server": "NTPサーバー"
+    },
+
+    "region": {
+        "title": "地域"
+    },
+
+    "ntp": {
+        "title": "NTPサーバー"
+    },
+
+    "general": {
+        "title": "一般",
+        "language": "言語",
+        "device_info": "デバイス情報",
+        "experimental": "実験的",
+        "debug": "デバッグ"
+    },
+
+    "language": {
+        "title": "言語",
+        "english": "English",
+        "tchinese": "繁體中文",
+        "japanese": "日本語"
+    },
+
+    "device_info": {
+        "title": "デバイス情報",
+        "model_desc": "ESP32-S3 ウォッチ",
+        "version_title": "バージョン",
+        "version": "v1.0-esp32-port",
+        "model_title": "モデル",
+        "model": "ESP32-S3-Touch-AMOLED-2.06"
+    },
+
+    "experimental": {
+        "title": "実験的",
+        "desc": "開発者向けオプション — パフォーマンスに影響する可能性があります",
+        "color_circle_test": "カラー円テスト",
+        "color_circle_desc": "PNGアイコンを単色の円に置き換え",
+        "prescaled_icons": "プリスケールアイコン",
+        "prescaled_desc": "96×96 RGB565アイコンを使用 (PNGデコードなし)。\npng_images_rgb565.cが必要です。",
+        "resolution_scale": "解像度スケール",
+        "resolution_desc": "内部解像度をダウンスケール (RAMのみ)"
+    },
+
+    "debug": {
+        "title": "デバッグ",
+        "desc": "デバッグとパフォーマンス監視オプション。",
+        "system_title": "システム",
+        "log": "ログ",
+        "log_desc": "CPUクロック節約のため無効化。\nオフ時はすべてのESP_LOG出力が抑制されます。",
+        "display_title": "ディスプレイ",
+        "cpu_monitor": "LVGL CPUモニター",
+        "cpu_monitor_desc": "FPSとCPU使用率のオーバーレイを表示。\n無効化するとパフォーマンスモニターが非表示になります。"
+    },
+
+    "menu": {
+        "app_store": "App Store",
+        "calculator": "電卓",
+        "clock": "時計",
+        "messages": "メッセージ",
+        "music": "ミュージック",
+        "mail": "メール",
+        "maps": "マップ",
+        "phone": "電話",
+        "photos": "写真",
+        "noise": "ノイズ",
+        "settings": "設定",
+        "weather": "天気",
+        "workout": "ワークアウト",
+        "activity": "アクティビティ",
+        "alarm": "アラーム",
+        "breathe": "呼吸",
+        "calendar": "カレンダー",
+        "camera": "カメラ",
+        "home": "ホーム",
+        "pulse": "脈拍",
+        "reminders": "リマインダー",
+        "remote": "リモート",
+        "stocks": "株式",
+        "stopwatch": "ストップウォッチ",
+        "timer": "タイマー",
+        "wallet": "ウォレット",
+        "world_clock": "世界時計"
+    },
+
+    "photos": {
+        "title": "写真",
+        "no_photos": "写真が見つかりません",
+        "watch": "ウォッチ",
+        "google_watch": "Googleウォッチ",
+        "count_word": "枚"
+    },
+
+    "common": {
+        "ok": "OK",
+        "cancel": "キャンセル",
+        "save": "保存",
+        "delete": "削除",
+        "confirm": "確認",
+        "enabled": "有効",
+        "disabled": "無効",
+        "on": "オン",
+        "off": "オフ"
+    },
+
+    "warning": {
+        "title": "高温",
+        "desc": "スマートウォッチを冷却する必要があります",
+        "disabled": "Wi-Fi、Bluetoothと充電が無効です"
+    }
+}

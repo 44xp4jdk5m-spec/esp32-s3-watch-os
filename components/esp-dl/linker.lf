@@ -1,0 +1,19 @@
+# Move esp-dl's static data (BSS) into PSRAM instead of internal DIRAM.
+#
+# esp-dl keeps a ~5 KB static dual-core dispatch runtime (2x2 KB worker task
+# stacks + TCBs) in internal RAM.  This watch is memory-constrained at boot
+# (the SPI/DMA heap is nearly exhausted), so this internal footprint was
+# starving the SPI driver and caused "spi transmit (queue) color failed".
+#
+# Same mechanism the WiFi/BT stacks use, gated by
+# CONFIG_SPIRAM_ALLOW_BSS_SEG_EXTERNAL_MEMORY=y: move libesp-dl.a's
+# zero-initialised static data into the extern_ram (PSRAM) region.
+[scheme:espdl_extram]
+entries:
+    bss -> extern_ram
+    common -> extern_ram
+
+[mapping:espdl]
+archive: libesp-dl.a
+entries:
+    * (espdl_extram)

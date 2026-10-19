@@ -1,0 +1,16 @@
+## IDF Component Manager Manifest File
+dependencies:
+  waveshare/esp32_s3_touch_amoled_2_06:
+    version: '*'
+  lvgl/lvgl:
+    version: 9.5.0
+    public: true
+  waveshare/qmi8658:
+    version: '*'
+  waveshare/esp_lcd_sh8601:
+    version: 1.0.2
+  espressif/esp_lvgl_port:
+    version: 2.6.0
+  espressif/tinyusb: ^0.15
+  # NOTE: esp-dl is a LOCAL component (components/esp-dl) — a trimmed build
+  # of espressif/esp-dl to keep the flash/RAM footprint small on this watch.

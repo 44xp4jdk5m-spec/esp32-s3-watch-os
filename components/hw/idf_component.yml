@@ -1,0 +1,12 @@
+## IDF Component Manager Manifest File
+dependencies:
+  waveshare/esp32_s3_touch_amoled_2_06:
+    version: '*'
+  lvgl/lvgl:
+    version: 9.5.0
+  waveshare/qmi8658:
+    version: '*'
+  espressif/esp_lvgl_port:
+    version: 2.6.0
+  espressif/esp_codec_dev:
+    version: '~1.5'

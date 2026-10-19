@@ -1,0 +1,6 @@
+## IDF Component Manager Manifest File
+dependencies:
+  lvgl/lvgl:
+    version: 9.5.0
+  espressif/esp_codec_dev:
+    version: '~1.5'

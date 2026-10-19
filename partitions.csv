@@ -1,0 +1,10 @@
+# Name,   Type, SubType, Offset,  Size, Flags
+# 32MB flash: factory + ota_0 + ota_1 (8M each) + storage ~7.9M.
+# Note: if you change the phy_init or app partition offset, make sure to change the offset in Kconfig.projbuild
+nvs,      data, nvs,     0x9000,  0x6000,
+phy_init, data, phy,     0xf000,  0x1000,
+otadata,  data, ota,     ,        0x2000,
+factory,  app,  factory, ,        8M,
+ota_0,    app,  ota_0,   ,        8M,
+ota_1,    app,  ota_1,   ,        8M,
+storage,  data, spiffs,  ,        0x7E0000,

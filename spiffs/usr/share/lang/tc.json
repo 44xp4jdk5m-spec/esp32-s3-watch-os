@@ -1,0 +1,278 @@
+{
+    "lang_name": "繁體中文",
+    "lang_code": "tc",
+
+    "settings": {
+        "title": "設定",
+        "wifi": "Wi-Fi",
+        "bluetooth": "藍牙",
+        "display": "顯示器",
+        "power": "電源",
+        "notifications": "通知",
+        "sound_haptics": "聲音與觸覺",
+        "apps": "應用程式",
+        "app_view": "應用程式顯示",
+        "storage": "儲存空間",
+        "time_region": "時間與地區",
+        "general": "一般",
+        "language": "語言",
+        "device_info": "裝置資訊",
+        "experimental": "實驗性",
+        "debug": "偵錯",
+        "back": "返回",
+        "battery": "電池",
+        "sd_card": "SD卡",
+        "google_drive": "Google雲端硬碟"
+    },
+
+    "wifi": {
+        "title": "Wi-Fi",
+        "switch_label": "Wi-Fi",
+        "on_desc": "Wi-Fi已開啟 — 開機時自動時間同步",
+        "off_desc": "Wi-Fi已關閉 — 跳過RTC校準",
+        "disabled_note": "關閉後，手錶將不會連接\n任何網路或校準RTC。"
+    },
+
+    "bluetooth": {
+        "title": "藍牙",
+        "switch_label": "藍牙",
+        "ancs_title": "ANCS",
+        "ancs_label": "通知 (ANCS)",
+        "pairing_title": "配對",
+        "connect_iphone": "連接iPhone",
+        "connected": "已連接iPhone",
+        "pairing": "配對中... 請查看下方密碼",
+        "not_connected": "未連接"
+    },
+
+    "display": {
+        "title": "顯示器",
+        "brightness": "亮度",
+        "always_on": "永遠顯示",
+        "always_on_desc": "閒置超時後，不關閉螢幕，改為調暗進入低功耗 1Hz AOD 模式並進行像素位移。觸控、按鍵或抬腕可喚醒。",
+        "wake_on_raise": "抬腕喚醒",
+        "wake_on_raise_desc": "螢幕關閉時抬起手腕\n自動喚醒裝置。",        "light_sleep": "淺度睡眠",
+        "light_sleep_desc": "螢幕關閉時讓 CPU 休眠以節省電量（觸控／按鍵／抬腕喚醒）。",
+        "light_sleep_learn_more": "淺度睡眠會在螢幕關閉時讓 CPU 進入低功耗睡眠狀態。觸控、按鍵或抬腕即可立即喚醒。\n\n仍會持續運作的功能：\n· RTC 維持精確時間\n· 鬧鐘與提醒\n· 藍牙配對狀態\n· 低功耗抬腕偵測\n\n一般使用下電池續航可延長數天。若喚醒後觸控反應遲鈍，請關閉此選項。",
+        "dim_timeout": "調暗逾時",
+        "dim_timeout_5s": "5秒",
+        "dim_timeout_15s": "15秒",
+        "dim_timeout_30s": "30秒",
+        "dim_timeout_60s": "1分鐘",
+        "dim_timeout_300s": "5分鐘",
+        "dim_timeout_desc": "螢幕調暗至半亮度的時間。"
+    },
+
+    "power": {
+        "title": "電源",
+        "power_chips": "電源晶片",
+        "cpu": "CPU",
+        "charge_limit": "充電限制 (80%)",
+        "charge_limit_desc": "充電至80%停止以延長電池壽命。",
+        "low_power": "低功耗模式",
+        "low_power_desc": "停用動畫、15 FPS、5秒調暗、80%亮度。",
+        "cpu_protection": "CPU保護",
+        "cpu_protection_desc": "監控CPU/PMIC溫度，過熱時限制。",
+        "chips_temp_threshold": "電源晶片溫度閾值",
+        "chips_temp_threshold_desc": "AXP2101 PMIC溫度上限。\n超過時停止充電。",
+        "cpu_temp_threshold": "CPU溫度閾值"
+    },
+
+    "notifications": {
+        "title": "通知",
+        "coming_soon": "通知設定即將推出"
+    },
+
+    "sound": {
+        "title": "聲音與觸覺",
+        "silent_mode": "靜音模式",
+        "silent_mode_desc": "抑制所有聲音和震動。",
+        "haptics": "觸覺回饋",
+        "haptics_desc": "震動強度、模式與持續時間",
+        "vibrator_strength": "震動強度",
+        "vibrator_pattern": "震動模式",
+        "vibrator_duration": "震動持續時間",
+        "pattern_normal": "一般",
+        "pattern_double": "雙擊",
+        "pattern_long": "長震",
+        "pattern_short_short": "短-短",
+        "pattern_rapid": "快速"
+    },
+
+    "password": {
+        "title": "密碼",
+        "enable": "啟用密碼",
+        "change": "更改密碼",
+        "simple_mode": "簡易模式 (4位數)"
+    },
+
+    "apps": {
+        "title": "應用程式"
+    },
+
+    "app_view": {
+        "title": "應用程式顯示",
+        "honeycomb": "蜂巢",
+        "list": "列表顯示",
+        "grid_view": "網格顯示",
+        "list_view": "列表顯示",
+        "distinct_icons": "僅顯示不同圖示",
+        "distinct_icons_desc": "在蜂巢選單中隱藏重複圖示。",
+        "layout_mode": "佈局模式",
+        "layout_hex": "六角螺旋",
+        "layout_grid": "垂直網格",
+        "entry_animation": "進入動畫",
+        "entry_animation_desc": "逐行動畫顯示圖示。"
+    },
+
+    "storage": {
+        "title": "儲存空間",
+        "sd_card": "SD卡",
+        "google_drive": "Google雲端硬碟",
+        "usb_msc": "USB大容量儲存",
+        "usb_msc_desc": "透過USB存取SD卡。",
+        "wifi_fs": "WiFi檔案伺服器",
+        "wifi_fs_desc": "透過HTTP瀏覽SD卡。",
+        "eject_sd": "退出SD卡",
+        "eject_sd_desc": "移除前安全卸載SD卡。",
+        "ejected": "SD卡已安全退出。\n您現在可以移除它。",
+        "pending_uploads": "待上傳項目",
+        "status": "狀態",
+        "mounted": "已掛載",
+        "not_found": "未找到",
+        "folder_id": "資料夾ID",
+        "access_token": "存取權杖",
+        "set": "已設定",
+        "not_set": "未設定",
+        "card_info": "卡片資訊",
+        "tinyusb_msc": "TinyUSB大容量儲存",
+        "usb_msc": "USB大容量儲存",
+        "wifi_fs": "WiFi檔案伺服器",
+        "upload_to_gdrive": "上傳至Google雲端硬碟",
+        "auto_upload": "自動上傳",
+        "account": "帳戶",
+        "wifi_title": "WiFi",
+        "sd_settings": "SD卡儲存空間設定",
+        "gdrive_settings": "Google雲端硬碟自動上傳設定"
+    },
+
+    "battery": {
+        "last_charged": "上次充電至100%"
+    },
+
+    "time_region": {
+        "title": "時間與地區",
+        "region": "地區",
+        "ntp_server": "NTP伺服器"
+    },
+
+    "region": {
+        "title": "地區"
+    },
+
+    "ntp": {
+        "title": "NTP伺服器"
+    },
+
+    "general": {
+        "title": "一般",
+        "language": "語言",
+        "device_info": "裝置資訊",
+        "experimental": "實驗性",
+        "debug": "偵錯"
+    },
+
+    "language": {
+        "title": "語言",
+        "english": "English",
+        "tchinese": "繁體中文",
+        "japanese": "日本語"
+    },
+
+    "device_info": {
+        "title": "裝置資訊",
+        "model_desc": "ESP32-S3手錶",
+        "version_title": "版本",
+        "version": "v1.0-esp32-port",
+        "model_title": "型號",
+        "model": "ESP32-S3-Touch-AMOLED-2.06"
+    },
+
+    "experimental": {
+        "title": "實驗性",
+        "desc": "開發者選項 — 可能影響效能",
+        "color_circle_test": "彩色圓形測試",
+        "color_circle_desc": "以純色圓形取代PNG圖示",
+        "prescaled_icons": "預縮放圖示",
+        "prescaled_desc": "使用96×96 RGB565圖示（無PNG解碼）。\n需要png_images_rgb565.c。",
+        "resolution_scale": "解析度縮放",
+        "resolution_desc": "降低內部解析度（僅RAM）"
+    },
+
+    "debug": {
+        "title": "偵錯",
+        "desc": "偵錯與效能監控選項。",
+        "system_title": "系統",
+        "log": "記錄",
+        "log_desc": "關閉以節省CPU時脈週期。\n關閉時，所有ESP_LOG輸出將被抑制。",
+        "display_title": "顯示器",
+        "cpu_monitor": "LVGL CPU監控器",
+        "cpu_monitor_desc": "顯示FPS和CPU使用率覆蓋層。\n關閉時隱藏效能監控器。"
+    },
+
+    "menu": {
+        "app_store": "App Store",
+        "calculator": "計算機",
+        "clock": "時鐘",
+        "messages": "訊息",
+        "music": "音樂",
+        "mail": "郵件",
+        "maps": "地圖",
+        "phone": "電話",
+        "photos": "照片",
+        "noise": "噪音",
+        "settings": "設定",
+        "weather": "天氣",
+        "workout": "體能訓練",
+        "activity": "活動",
+        "alarm": "鬧鐘",
+        "breathe": "呼吸",
+        "calendar": "行事曆",
+        "camera": "相機",
+        "home": "家庭",
+        "pulse": "心率",
+        "reminders": "提醒事項",
+        "remote": "遙控器",
+        "stocks": "股市",
+        "stopwatch": "碼錶",
+        "timer": "計時器",
+        "wallet": "錢包",
+        "world_clock": "世界時鐘"
+    },
+
+    "photos": {
+        "title": "照片",
+        "no_photos": "找不到照片",
+        "watch": "手錶",
+        "google_watch": "Google手錶",
+        "count_word": "張"
+    },
+
+    "common": {
+        "ok": "確定",
+        "cancel": "取消",
+        "save": "儲存",
+        "delete": "刪除",
+        "confirm": "確認",
+        "enabled": "已啟用",
+        "disabled": "已停用",
+        "on": "開",
+        "off": "關"
+    },
+
+    "warning": {
+        "title": "高溫",
+        "desc": "智慧手錶需要冷卻",
+        "disabled": "Wi-Fi、藍牙與充電已停用"
+    }
+}

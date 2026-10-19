@@ -1,0 +1,18 @@
+{
+  "model": "wake_on_raise",
+  "input_shape": [
+    1,
+    1,
+    75,
+    6
+  ],
+  "accel_div": 32.0,
+  "gyro_div": 512.0,
+  "threshold": 0.9921875,
+  "float_threshold": 0.9992062449455261,
+  "quant_acc": 1.0,
+  "quant_precision": 1.0,
+  "quant_recall": 1.0,
+  "espdl_bytes": 64912,
+  "params": 56961
+}
