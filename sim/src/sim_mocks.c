@@ -63,6 +63,19 @@ app_config_t g_config = {
     .hands_face_sec          = 0xFF3B30,
 };
 
+/* On device app_config_init() resets honeycomb_icon_order to the identity
+ * permutation (0..47) before every load.  That function pulls in NVS/SPIFFS
+ * and isn't linked into the simulator, so the array would stay all-zero and
+ * every launcher slot would resolve to icon 0 (the same icon 48 times).
+ * Do it once, before main(). */
+static void sim_icon_order_identity(void) __attribute__((constructor));
+static void sim_icon_order_identity(void)
+{
+    for (size_t i = 0; i < sizeof(g_config.honeycomb_icon_order); i++) {
+        g_config.honeycomb_icon_order[i] = (uint8_t)i;
+    }
+}
+
 /* ── Event-layer state ────────────────────────────────────────────── */
 uint8_t g_brightness = 70;
 
