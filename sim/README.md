@@ -30,13 +30,17 @@ Hardware values are synthesised, because there is nothing to read:
 - **Activity** — tap its launcher tile, or start with `--activity`
 - **Noise** — tap its launcher tile, or start with `--noise` (the mic is a
   synthetic tone, so the meter moves on its own)
+- **Settings** — tap its launcher tile, or start with `--settings` (the
+  language strings are read from the real `spiffs/usr/share/lang/*.json`)
+- **Control Center** — press key `2` (GPIO10), or start with `--cc`
+- **Flashlight** — tap its control-centre tile, or start with `--flashlight`
 - Touch input (mouse) and the two hardware buttons (keys `1` / `2`)
 
 Not simulated (they need hardware services or offline-generated models):
 
 - Parallax face — shows a placeholder; build the depth layers with
   `tools/parallax_face/build_parallax_face.py` to run it on the device
-- Settings and Photo apps (next on the list)
+- Photo app (next on the list)
 - QuickJS apps, BLE/ANCS, WiFi, OTA, USB MSC
 
 ## Prerequisites
@@ -49,7 +53,15 @@ Not simulated (they need hardware services or offline-generated models):
 Debian / Raspberry Pi OS:
 
 ```bash
-sudo apt install build-essential cmake pkg-config libsdl2-dev
+sudo apt install build-essential cmake pkg-config libsdl2-dev libcjson-dev
+```
+
+Settings reads its language strings and a few OS services from the device
+paths, so expose the repo folders once:
+
+```bash
+sudo ln -sfn "$PWD/spiffs" /spiffs
+sudo ln -sfn "$PWD/sdcard" /sdcard
 ```
 
 Fedora:
@@ -89,7 +101,7 @@ it with `-DFETCHCONTENT_SOURCE_DIR_LVGL=/path/to/lvgl`.
 | Key / input | Action |
 |---|---|
 | `1` (hold) | GPIO0 / BOOT button — click: face ↔ launcher; long press (1 s): no-op |
-| `2` (hold) | GPIO10 / PWR button — click/long press (2 s): control centre / shutdown (not simulated, logged only) |
+| `2` (hold) | GPIO10 / PWR button — click: open the control centre (again: scroll to top); long press (2 s): shutdown (not simulated, logged) |
 | Left click / drag | touch |
 | Left press 450 ms | open the watch-face picker (same gesture as the device) |
 | Right drag | tilt the watch (IMU) |

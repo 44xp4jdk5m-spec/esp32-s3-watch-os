@@ -27,11 +27,13 @@
 #include "activity_ui.h"
 #include "app_config.h"
 #include "app_events.h"
+#include "app_lang.h"
 #include "calculator_ui.h"
 #include "control_center.h"
 #include "flashlight_ui.h"
 #include "honeycomb_menu.h"
 #include "noise_ui.h"
+#include "settings_ui.h"
 #include "sim_display.h"
 #include "sim_input.h"
 #include "sim_platform.h"
@@ -52,6 +54,7 @@ static bool     s_open_activity   = false;
 static bool     s_open_noise      = false;
 static bool     s_open_cc         = false;
 static bool     s_open_flashlight = false;
+static bool     s_open_settings   = false;
 
 /* Hardware-button state: key 1 = GPIO0 (BOOT), key 2 = GPIO10 (PWR). */
 static bool     s_btn_down[2];
@@ -146,6 +149,14 @@ static void open_flashlight(void)
     printf("[sim] flashlight opened\n");
 }
 
+static void open_settings(void)
+{
+    if (honeycomb_menu_is_active()) honeycomb_menu_destroy();
+    if (!settings_ui_is_active()) settings_ui_create();
+    g_current_screen = APP_SCREEN_SETTINGS;
+    printf("[sim] settings opened\n");
+}
+
 static void finish_boot(void)
 {
     ui_boot_up_complete();
@@ -170,6 +181,8 @@ static void finish_boot(void)
     } else if (s_open_flashlight) {
         open_control_center();
         open_flashlight();
+    } else if (s_open_settings) {
+        open_settings();
     }
 }
 
@@ -231,6 +244,18 @@ static void sim_button_event(sim_btn_t btn, sim_btn_event_t evt)
             noise_ui_handle_back();
             g_current_screen = APP_SCREEN_WATCH_FACE;
             printf("[sim] noise closed\n");
+            return;
+        }
+        if (settings_ui_is_active() &&
+            g_current_screen == APP_SCREEN_SETTINGS) {
+            settings_ui_handle_back();
+            if (!settings_ui_is_active()) {
+                const bool from_cc = g_settings_return_to_cc;
+                g_settings_return_to_cc = false;
+                g_current_screen = from_cc ? APP_SCREEN_CONTROL_CENTER
+                                          : APP_SCREEN_WATCH_FACE;
+                printf("[sim] settings closed\n");
+            }
             return;
         }
         if (flashlight_ui_is_active()) {
@@ -325,6 +350,8 @@ int main(int argc, char **argv)
             s_open_cc = true;
         } else if (strcmp(argv[i], "--flashlight") == 0) {
             s_open_flashlight = true;
+        } else if (strcmp(argv[i], "--settings") == 0) {
+            s_open_settings = true;
         } else if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
             printf("usage: %s [options]\n", argv[0]);
             printf("  --scale N        window scale 1..4 (default 1)\n");
@@ -335,6 +362,7 @@ int main(int argc, char **argv)
             printf("  --calculator     open the calculator after boot\n");
             printf("  --activity       open the activity app after boot\n");
             printf("  --noise          open the noise app after boot\n");
+            printf("  --settings       open the settings app after boot\n");
             printf("  --cc             open the control center after boot\n");
             printf("  --flashlight     open the control center + flashlight after boot\n");
             printf("  --shot FILE      save a BMP frame to FILE and exit\n");
@@ -357,6 +385,7 @@ int main(int argc, char **argv)
     watch_face_picker_init();
     control_center_init();
     flashlight_ui_init();
+    app_lang_init();        /* reads /spiffs/usr/share/lang/<code>.json */
     printf("[sim] %u watch faces registered\n", watch_face_count());
     printf("[sim] keys: 1 = GPIO0 (BOOT), 2 = GPIO10 (PWR), Esc quit\n");
     printf("[sim] hold the left mouse button on the face for the picker\n");
@@ -406,6 +435,21 @@ int main(int argc, char **argv)
         if (g_pending_cc_scroll_top) {
             g_pending_cc_scroll_top = false;
             control_center_scroll_top();
+        }
+        if (g_pending_settings) {
+            g_pending_settings = false;
+            open_settings();
+        }
+        if (g_pending_cc_open_settings) {
+            g_pending_cc_open_settings = false;
+            open_settings();
+        }
+        if (g_pending_cc_settings_target >= 0) {
+            const settings_cc_target_t t =
+                (settings_cc_target_t)g_pending_cc_settings_target;
+            g_pending_cc_settings_target = -1;
+            settings_ui_launch_from_cc(t);
+            g_current_screen = APP_SCREEN_SETTINGS;
         }   open_activity();
         }
 

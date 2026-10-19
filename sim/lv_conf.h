@@ -26,6 +26,10 @@
 /* Single-threaded: the SDL loop calls lv_timer_handler(). */
 #define LV_USE_OS LV_OS_NONE
 
+/* Settings has a CPU/FPS overlay toggle (lv_sysmon_show_performance). */
+#define LV_USE_SYSMON 1
+#define LV_USE_PERF_MONITOR 1
+
 /* Built-in allocator with a generous heap (the device uses PSRAM). */
 #define LV_USE_STDLIB_MALLOC LV_STDLIB_BUILTIN
 #define LV_MEM_SIZE (64U * 1024U * 1024U)

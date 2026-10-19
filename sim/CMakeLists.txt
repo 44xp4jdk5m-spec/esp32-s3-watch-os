@@ -92,12 +92,48 @@ set(SIM_SOURCES
     "${WATCH_ROOT}/components/apps/control_center/control_center.c"
     "${WATCH_ROOT}/components/apps/flashlight/flashlight_ui.c"
 
+    # Settings app + the OS services it reads (language strings, app list)
+    "${WATCH_ROOT}/components/apps/settings/settings_ui.c"
+    "${WATCH_ROOT}/components/apps/settings/settings_config.c"
+    "${WATCH_ROOT}/components/apps/settings/settings_display.c"
+    "${WATCH_ROOT}/components/apps/settings/settings_sound.c"
+    "${WATCH_ROOT}/components/apps/settings/settings_network.c"
+    "${WATCH_ROOT}/components/apps/settings/settings_power.c"
+    "${WATCH_ROOT}/components/apps/settings/settings_storage.c"
+    "${WATCH_ROOT}/components/apps/settings/settings_appview.c"
+    "${WATCH_ROOT}/components/apps/settings/settings_general.c"
+    "${WATCH_ROOT}/components/apps/settings/settings_apps.c"
+    "${WATCH_ROOT}/components/os/lang/app_lang.c"
+    "${WATCH_ROOT}/components/os/app_registry.c"
+
+    # system_widget primitives used by Settings
+    "${WATCH_ROOT}/components/system_widget/actionsheet/sheet.c"
+    "${WATCH_ROOT}/components/system_widget/button/sw_button.c"
+    "${WATCH_ROOT}/components/system_widget/comment/sw_comment.c"
+    "${WATCH_ROOT}/components/system_widget/entry/sw_entry.c"
+    "${WATCH_ROOT}/components/system_widget/graph/sw_graph.c"
+    "${WATCH_ROOT}/components/system_widget/icon_btn/sw_icon_btn.c"
+    "${WATCH_ROOT}/components/system_widget/info/sw_info.c"
+    "${WATCH_ROOT}/components/system_widget/learn_more/sw_learn_more.c"
+    "${WATCH_ROOT}/components/system_widget/list/sw_list.c"
+    "${WATCH_ROOT}/components/system_widget/nav_header/sw_nav_header.c"
+    "${WATCH_ROOT}/components/system_widget/picker/sw_picker.c"
+    "${WATCH_ROOT}/components/system_widget/row/sw_row.c"
+    "${WATCH_ROOT}/components/system_widget/slider/sw_slider.c"
+    "${WATCH_ROOT}/components/system_widget/subpage/sw_subpage.c"
+    "${WATCH_ROOT}/components/system_widget/title/sw_title.c"
+    "${WATCH_ROOT}/components/system_widget/toggle/sw_toggle.c"
+    "${WATCH_ROOT}/components/system_widget/transition/sw_transition.c"
+    "${WATCH_ROOT}/components/system_widget/keyboard/keyboard.c"
+    "${WATCH_ROOT}/components/system_widget/keyboard/kbd_icons.c"
+
     # Simulator glue
     "${SIM_DIR}/src/main.c"
     "${SIM_DIR}/src/sim_display.c"
     "${SIM_DIR}/src/sim_input.c"
     "${SIM_DIR}/src/sim_platform.c"
     "${SIM_DIR}/src/sim_mocks.c"
+    "${SIM_DIR}/src/sim_services.c"
 )
 
 add_executable(watch_sim ${SIM_SOURCES})
@@ -147,6 +183,27 @@ target_include_directories(watch_sim PRIVATE
     "${WATCH_ROOT}/components/apps/settings"
     "${WATCH_ROOT}/components/system_widget/theme"
     "${WATCH_ROOT}/components/hw/actuator"
+    "${WATCH_ROOT}/components/os/lang"
+    "${WATCH_ROOT}/components/os/services"
+    "${WATCH_ROOT}/components/os/air_pointer"
+    "${WATCH_ROOT}/components/os/wrist_flick"
+    "${WATCH_ROOT}/components/system_widget/actionsheet"
+    "${WATCH_ROOT}/components/system_widget/button"
+    "${WATCH_ROOT}/components/system_widget/comment"
+    "${WATCH_ROOT}/components/system_widget/entry"
+    "${WATCH_ROOT}/components/system_widget/graph"
+    "${WATCH_ROOT}/components/system_widget/icon_btn"
+    "${WATCH_ROOT}/components/system_widget/info"
+    "${WATCH_ROOT}/components/system_widget/learn_more"
+    "${WATCH_ROOT}/components/system_widget/list"
+    "${WATCH_ROOT}/components/system_widget/nav_header"
+    "${WATCH_ROOT}/components/system_widget/picker"
+    "${WATCH_ROOT}/components/system_widget/row"
+    "${WATCH_ROOT}/components/system_widget/slider"
+    "${WATCH_ROOT}/components/system_widget/subpage"
+    "${WATCH_ROOT}/components/system_widget/title"
+    "${WATCH_ROOT}/components/system_widget/toggle"
+    "${WATCH_ROOT}/components/system_widget/transition"
     "${WATCH_ROOT}/components/apps/noise"
     "${WATCH_ROOT}/components/apps/noise/ui"
     "${WATCH_ROOT}/components/system_widget"
@@ -168,6 +225,7 @@ target_compile_options(watch_sim PRIVATE
     -g
 )
 
-target_link_libraries(watch_sim PRIVATE lvgl sim_icons_circle sim_icons_rgb565 ${SDL2_LIBRARIES} m)
+target_link_libraries(watch_sim PRIVATE lvgl sim_icons_circle sim_icons_rgb565
+                      ${SDL2_LIBRARIES} cjson m)
 target_include_directories(watch_sim PRIVATE ${SDL2_INCLUDE_DIRS})
 target_link_directories(watch_sim PRIVATE ${SDL2_LIBRARY_DIRS})
